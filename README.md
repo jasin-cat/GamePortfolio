@@ -9,4 +9,5 @@
   狙う際にshaderで中心がわかるようにした。
 ### 操作方法
   マウスの左クリック長押しで狙いを定めて、離すと矢が打てる
-<br>https://github.com/jasin-cat/Portfolio/Archery/index.html
+<br>
+https://jasin-cat.github.io/GamePortfolio/Archery/index.html
