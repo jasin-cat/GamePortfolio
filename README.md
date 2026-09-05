@@ -23,3 +23,15 @@ https://jasin-cat.github.io/GamePortfolio/Archery/index.html
   playerをマウスとWキーで操作してspeaceキーでジャンプしてマインスイーパーをクリアする
 <br>
 https://jasin-cat.github.io/GamePortfolio/Minesweeper/index.html
+<br>
+<br>
+<br>
+## キャッチボール
+### 制作時間
+  1周間
+### こだわり
+  レティクル
+### 操作方法
+  レティクルがなくなるときにレティクルをクリックすると判定する
+<br>
+https://jasin-cat.github.io/GamePortfolio/Minesweeper/index.html
