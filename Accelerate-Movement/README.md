@@ -1,7 +1,7 @@
 # AccelerateMovement
 ## Common
 FadeControllerクラスでシングルトンを使用したいと思ったので、シングルトンを継承できるように、ジェネリックの基底クラスSingletonを作成しました。
-###URL
+### URL
 https://github.com/jasin-cat/GamePortfolio/tree/main/Accelerate-Movement/Scripts/Common
 ## Enemy
 Enemyの攻撃の動きを作りました。<br>
