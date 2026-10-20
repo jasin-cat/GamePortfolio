@@ -664,6 +664,7 @@ footer .wrap {
 
 .article {
     grid-column: 4 / 13;
+    margin-top: 96px;
 }
 
 .article section {
@@ -964,6 +965,10 @@ code {
     }
 
     .aside {
+        margin-top: 48px;
+    }
+
+    .article {
         margin-top: 48px;
     }
 
