@@ -5,155 +5,208 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <h1 class="logo"><a href="index.html">杉山健太 ポートフォリオ</a></h1>
-            <nav>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="ページ内">
                 <ul>
                     <li><a href="#profile">プロフィール</a></li>
-                    <li><a href="#pr">自己PR</a></li>
                     <li><a href="#skills">スキル</a></li>
-                    <li><a href="#works">作品一覧</a></li>
+                    <li><a href="#pr">自己PR</a></li>
+                    <li><a href="#works">ゲーム一覧</a></li>
                     <li><a href="#contact">連絡先</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <div class="container">
-        <main>
-            <!-- プロフィール -->
-            <h2 id="profile">プロフィール</h2>
-            <p class="intro-text">
-                ゲームプログラマーを目指している杉山健太です。<br>
-                制作したゲームと、各作品で担当した技術をまとめたポートフォリオです。作品ごとにプレイ映像・画像と実装内容を紹介します。
-            </p>
-            <table>
-                <tr>
-                    <th>名前</th>
-                    <td>杉山健太</td>
-                </tr>
-                <tr>
-                    <th>目指す職種</th>
-                    <td>ゲームプログラマー</td>
-                </tr>
-                <tr>
-                    <th>学校</th>
-                    <td>東京デザインテクノロジーセンター専門学校</td>
-                </tr>
-                <tr>
-                    <th>学習歴</th>
-                    <td>
-                        UnityC# → 2年<br>C/C++ → 1年
-                    </td>
-                </tr>
-                <tr>
-                    <th>興味のある分野</th>
-                    <td>RPG - 子供の時からやってきたジャンルであるため。</td>
-                </tr>
-                <tr>
-                    <th>使用ツール</th>
-                    <td>Unity / Visual Studio / Git など</td>
-                </tr>
-                <tr>
-                    <th>使用言語</th>
-                    <td>C# など</td>
-                </tr>
-            </table>
+    <main class="wrap">
+        <!-- 表紙：名前と志望職種 -->
+        <section class="cover grid">
+            <h1 class="cover-title">杉山健太</h1>
+            <p class="cover-role"><b>ゲームプログラマー志望</b>東京デザインテクノロジーセンター専門学校<br>Unity・C#での制作が中心です。</p>
+            <p class="cover-lead">ゲームプログラマーを目指している杉山健太です。制作したゲームと、各作品で担当した技術をまとめたポートフォリオです。作品ごとにプレイ映像・画像と実装内容を紹介します。</p>
+        </section>
 
-            <!-- 自己PR -->
-            <h2 id="pr">自己PR</h2>
-            <h3>長所</h3>
-            <p>私の強みは、周囲の状況を把握し、今自分に何ができるかを考えて主体的に行動できることです。アルバイトでは、混雑時に人手が不足している場所や作業が滞っている部分を確認し、自分にできることを考えて行動してきました。また、チームでのゲーム制作では、メンバーそれぞれの得意分野や進捗状況を考慮してタスクを分担しました。自分の担当作業が終わった後も、他のメンバーの進捗を確認し、作業に遅れが生じた際には、メンバーと相談しながらタスクを再分配しました。その際、メンバーが対応できる作業と難しい作業を整理し、自分が対応できる作業を引き受けました。こうした取り組みを通じて、チームで期限内に作品を完成させることができました。入社後も、自分の担当業務だけでなくチーム全体の状況に目を向け、周囲と協力しながら主体的に開発に取り組んでいきたいと考えています。</p>
-            <h3>短所</h3>
-            <p>私の短所は、責任感から仕事を抱え込みすぎてしまうことです。チームでのゲーム制作では、作業の進捗が遅れているメンバーを助けようと、自分から多くのタスクを引き受け、最後まで取り組んだ経験があります。しかし、一人で多くの作業を抱えることは、自分自身の負担が増えるだけでなく、チーム全体の進行にも影響する可能性があると感じています。そのため、今後は自分の作業量を客観的に把握し、必要に応じてメンバーと相談しながら、無理のないタスク分担を意識していきたいと考えています。</p>
+        <!-- プロフィール -->
+        <section class="section grid" id="profile">
+            <div class="section-head">
+                <h2>プロフィール<span class="latin">Profile</span></h2>
+            </div>
+            <div class="section-body reveal">
+                <table class="facts">
+                    <tr><th>名前</th><td>杉山健太</td></tr>
+                    <tr><th>目指す職種</th><td>ゲームプログラマー</td></tr>
+                    <tr><th>学校</th><td>東京デザインテクノロジーセンター専門学校</td></tr>
+                    <tr><th>学習歴</th><td>UnityC# → 2年<br>C/C++ → 1年</td></tr>
+                    <tr><th>興味のある分野</th><td>RPG - 子供の時からやってきたジャンルであるため。</td></tr>
+                    <tr><th>使用ツール</th><td>Unity / Visual Studio / Git など</td></tr>
+                    <tr><th>使用言語</th><td>C# など</td></tr>
+                </table>
+            </div>
+        </section>
 
-            <!-- スキル -->
-            <h2 id="skills">スキル</h2>
-            <p>作品で実際に使用した技術です。各作品ページで、使った場面と実装内容を説明しています。</p>
-            <ul class="skill-list">
-                <li><b>開発ツール：</b>Unity / Visual Studio / Git など</li>
-                <li><b>プログラミング言語：</b>C# など</li>
-                <li><b>ライブラリ・Unity機能：</b>UniTask / UniRx / R3 / DOTween / LitMotion / Addressables / Input System / ScriptableObject など</li>
-                <li><b>技術分野：</b>状態管理（State Pattern） / MVP / Singletonの利用 / オブジェクトプール / シェーダー / シーン遷移 / 音声制御 / UI など</li>
-            </ul>
+        <!-- スキル -->
+        <section class="section grid" id="skills">
+            <div class="section-head">
+                <h2>スキル<span class="latin">Skills</span></h2>
+            </div>
+            <div class="section-body reveal">
+                <p class="note">作品で実際に使用した技術です。各作品ページで、使った場面と実装内容を説明しています。</p>
+                <table class="skill-table">
+                    <tr><th>開発ツール</th><td><ul><li>Unity</li><li>Visual Studio</li><li>Git など</li></ul></td></tr>
+                    <tr><th>プログラミング言語</th><td><ul><li>C# など</li></ul></td></tr>
+                    <tr><th>ライブラリ・Unity機能</th><td><ul><li>UniTask</li><li>UniRx</li><li>R3</li><li>DOTween</li><li>LitMotion</li><li>Addressables</li><li>Input System</li><li>ScriptableObject など</li></ul></td></tr>
+                    <tr><th>技術分野</th><td><ul><li>状態管理（State Pattern）</li><li>MVP</li><li>Singletonの利用</li><li>オブジェクトプール</li><li>シェーダー</li><li>シーン遷移</li><li>音声制御</li><li>UI など</li></ul></td></tr>
+                </table>
+            </div>
+        </section>
 
-            <!-- 作品一覧 -->
-            <h2 id="works">作品一覧</h2>
-            <p>各作品ページでは、プレイ映像・担当範囲に加えて、設計の選択理由・苦労した点・今後の改善予定と実装コードを掲載しています。</p>
-
-            <div class="work">
-                <div class="work-img">
-                    <a href="works/empiredash.html"><img class="poster" src="images/empiredash-thumb-800.jpg" alt="EmpireDash タイトル画像"></a>
-                </div>
-                <div class="work-text">
-                    <h3>EmpireDash<span class="status">完成</span></h3>
-                    <p>プレイヤー操作・状態管理と、ゲーム進行・演出を担当。</p>
-                    <p class="small">使用技術：Unity / C# / UniRx / DOTween など</p>
-                    <p><a href="works/empiredash.html">詳しく見る ＞</a></p>
+        <!-- 自己PR -->
+        <section class="section grid" id="pr">
+            <div class="section-head">
+                <h2>自己PR<span class="latin">Self-PR</span></h2>
+            </div>
+            <div class="section-body reveal">
+                <blockquote class="pull">周囲の状況を把握し、今自分に何ができるかを考えて主体的に行動できること。</blockquote>
+                <div class="columns">
+                    <div>
+                        <h3>長所</h3>
+                        <p>私の強みは、周囲の状況を把握し、今自分に何ができるかを考えて主体的に行動できることです。アルバイトでは、混雑時に人手が不足している場所や作業が滞っている部分を確認し、自分にできることを考えて行動してきました。また、チームでのゲーム制作では、メンバーそれぞれの得意分野や進捗状況を考慮してタスクを分担しました。自分の担当作業が終わった後も、他のメンバーの進捗を確認し、作業に遅れが生じた際には、メンバーと相談しながらタスクを再分配しました。その際、メンバーが対応できる作業と難しい作業を整理し、自分が対応できる作業を引き受けました。こうした取り組みを通じて、チームで期限内に作品を完成させることができました。入社後も、自分の担当業務だけでなくチーム全体の状況に目を向け、周囲と協力しながら主体的に開発に取り組んでいきたいと考えています。</p>
+                    </div>
+                    <div>
+                        <h3>短所</h3>
+                        <p>私の短所は、責任感から仕事を抱え込みすぎてしまうことです。チームでのゲーム制作では、作業の進捗が遅れているメンバーを助けようと、自分から多くのタスクを引き受け、最後まで取り組んだ経験があります。しかし、一人で多くの作業を抱えることは、自分自身の負担が増えるだけでなく、チーム全体の進行にも影響する可能性があると感じています。そのため、今後は自分の作業量を客観的に把握し、必要に応じてメンバーと相談しながら、無理のないタスク分担を意識していきたいと考えています。</p>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <div class="work">
-                <div class="work-img">
-                    <a href="works/catster.html"><div class="no-image">NO IMAGE</div></a>
-                </div>
-                <div class="work-text">
-                    <h3>Catster<span class="status">開発中</span></h3>
-                    <p>ゲーム進行管理や音声・シーン遷移などを紹介。</p>
-                    <p class="small">使用技術：Unity / C# / UniTask / MVP など</p>
-                    <p><a href="works/catster.html">詳しく見る ＞</a></p>
-                </div>
+        <!-- ゲーム一覧 -->
+        <section class="section grid" id="works">
+            <div class="section-head">
+                <h2>ゲーム一覧<span class="latin">Works</span></h2>
             </div>
+            <div class="section-body">
+                <p class="note">各作品ページでは、プレイ映像・担当範囲に加えて、設計の選択理由・苦労した点・今後の改善予定と実装コードを掲載しています。</p>
 
-            <div class="work">
-                <div class="work-img">
-                    <a href="works/acceleratemovement.html"><img class="poster" src="images/accelerate-poster-800.jpg" alt="AccelerateMovement ポスター"></a>
+                <div class="works-grid">
+                    <a class="work reveal" href="works/empiredash.html">
+                        <div class="img" style="--bg-img: url('images/empiredash-thumb-800.jpg')"><img src="images/empiredash-thumb-800.jpg" alt="EmpireDash タイトル画像" loading="lazy"></div>
+                        <div class="text">
+                            <h3>EmpireDash</h3>
+                            <p class="lead">プレイヤー操作・状態管理と、ゲーム進行・演出を担当。</p>
+                            <dl class="spec">
+                                <dt>ジャンル</dt><dd>姿を変えて進むランアクション</dd>
+                                <dt>期間</dt><dd>2025年11月〜2026年2月</dd>
+                                <dt>体制</dt><dd>チーム7名</dd>
+                                <dt>技術</dt><dd>Unity / C# / UniRx / DOTween</dd>
+                            </dl>
+                            <span class="go">詳しく見る</span>
+                        </div>
+                    </a>
+
+                    <a class="work reveal" href="works/catster.html">
+                        <div class="img" style="--bg-img: url('images/catster-thumb.jpg')"><img src="images/catster-thumb.jpg" alt="Catster タイトル画像" loading="lazy"></div>
+                        <div class="text">
+                            <h3>Catster<span class="state wip">未完成</span></h3>
+                            <p class="lead">ゲーム進行管理や音声・シーン遷移などを紹介。</p>
+                            <dl class="spec">
+                                <dt>ジャンル</dt><dd class="tbd">準備中</dd>
+                                <dt>状況</dt><dd>チーム解散により制作中断</dd>
+                                <dt>技術</dt><dd>Unity / C# / UniTask / MVP</dd>
+                            </dl>
+                            <span class="go">詳しく見る</span>
+                        </div>
+                    </a>
+
+                    <a class="work reveal" href="works/acceleratemovement.html">
+                        <div class="img" style="--bg-img: url('images/accelerate-poster-800.jpg')"><img src="images/accelerate-poster-800.jpg" alt="AccelerateMovement ポスター" loading="lazy"></div>
+                        <div class="text">
+                            <h3>AccelerateMovement</h3>
+                            <p class="lead">敵の出現・攻撃演出と、フェード・ランキング機能を担当。</p>
+                            <dl class="spec">
+                                <dt>ジャンル</dt><dd>加速して進む2D横スクロールアクション</dd>
+                                <dt>期間</dt><dd>2026年7月〜9月</dd>
+                                <dt>技術</dt><dd>Unity / C# / R3 / LitMotion / シェーダー</dd>
+                            </dl>
+                            <span class="go">詳しく見る</span>
+                        </div>
+                    </a>
+
+                    <a class="work reveal" href="works/Archery.html">
+                        <div class="img" style="--bg-img: url('images/archery-thumb.jpg')"><img src="images/archery-thumb.jpg" alt="Archery ゲーム画面" loading="lazy"></div>
+                        <div class="text">
+                            <h3>Archery</h3>
+                            <p class="lead">個人制作の3Dアーチェリー。照準操作・矢の物理挙動・得点判定を実装。</p>
+                            <dl class="spec">
+                                <dt>ジャンル</dt><dd>3Dアーチェリー（的当て）</dd>
+                                <dt>期間</dt><dd>約1週間</dd>
+                                <dt>体制</dt><dd>個人制作</dd>
+                                <dt>技術</dt><dd>Unity / C# / R3 / LitMotion / シェーダー</dd>
+                            </dl>
+                            <span class="go">詳しく見る</span>
+                        </div>
+                    </a>
+
+                    <a class="work reveal" href="works/escape.html">
+                        <div class="img" style="--bg-img: url('images/escape-thumb.jpg')"><img src="images/escape-thumb.jpg" alt="Escape ゲーム画面" loading="lazy"></div>
+                        <div class="text">
+                            <h3>Escape</h3>
+                            <p class="lead">一人称の迷路でコインを集めて脱出。UniRxを使ったMVP構成で実装。</p>
+                            <dl class="spec">
+                                <dt>ジャンル</dt><dd>一人称3D迷路脱出（タイムアタック）</dd>
+                                <dt>期間</dt><dd>約1週間</dd>
+                                <dt>体制</dt><dd>個人制作</dd>
+                                <dt>技術</dt><dd>Unity / C# / UniRx / UniTask / LitMotion</dd>
+                            </dl>
+                            <span class="go">詳しく見る</span>
+                        </div>
+                    </a>
+
+                    <a class="work reveal" href="works/minesweeper.html">
+                        <div class="img" style="--bg-img: url('images/minesweeper-thumb.jpg')"><img src="images/minesweeper-thumb.jpg" alt="Minesweeper ゲーム画面" loading="lazy"></div>
+                        <div class="text">
+                            <h3>Minesweeper</h3>
+                            <p class="lead">3Dの床を歩き、ジャンプで着地したマスを開けるマインスイーパー。</p>
+                            <dl class="spec">
+                                <dt>ジャンル</dt><dd>3Dアクション × マインスイーパー</dd>
+                                <dt>期間</dt><dd>約1週間</dd>
+                                <dt>体制</dt><dd>個人制作</dd>
+                                <dt>技術</dt><dd>Unity / C# / R3 / UniTask / LitMotion</dd>
+                            </dl>
+                            <span class="go">詳しく見る</span>
+                        </div>
+                    </a>
                 </div>
-                <div class="work-text">
-                    <h3>AccelerateMovement<span class="status">完成</span></h3>
-                    <p>敵の出現・攻撃演出と、フェード・ランキング機能を担当。</p>
-                    <p class="small">使用技術：Unity / C# / R3 / LitMotion / シェーダー など</p>
-                    <p><a href="works/acceleratemovement.html">詳しく見る ＞</a></p>
-                </div>
+                <!-- 作品を追加するときは works/ のページをコピーして中身を書き換え、ここに work を追加する -->
             </div>
+        </section>
 
-            <div class="work">
-                <div class="work-img">
-                    <a href="works/Archery.html"><div class="no-image">NO IMAGE</div></a>
-                </div>
-                <div class="work-text">
-                    <h3>Archery<span class="status">完成</span></h3>
-                    <p>個人制作の3Dアーチェリー。照準操作・矢の物理挙動・得点判定を実装。</p>
-                    <p class="small">使用技術：Unity / C# / R3 / LitMotion / シェーダー など</p>
-                    <p><a href="works/Archery.html">詳しく見る ＞</a></p>
-                </div>
+        <!-- 連絡先 -->
+        <section class="section grid" id="contact">
+            <div class="section-head">
+                <h2>連絡先<span class="latin">Contact</span></h2>
             </div>
-
-            <!-- 作品を追加するときは empiredash.html をコピーして中身を書き換え、ここに work を追加する -->
-
-            <!-- 連絡先 -->
-            <h2 id="contact">連絡先</h2>
-            <table>
-                <tr>
-                    <th>メール</th>
-                    <td>sugiyama.kenta028@gmail.com</td>
-                </tr>
-                <tr>
-                    <th>GitHub</th>
-                    <td><span class="todo">【要記入】GitHubのURL（READMEを整えたリポジトリ）</span></td>
-                </tr>
-            </table>
-        </main>
-    </div>
+            <div class="section-body">
+                <a class="mail" href="mailto:sugiyama.kenta028@gmail.com">sugiyama.kenta028@gmail.com</a>
+                <!-- <p>GitHub：<span class="todo">【要記入】GitHubのURL（READMEを整えたリポジトリ）</span></p> -->
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <p>&copy; 2026 杉山健太</p>
+        <div class="wrap"><span>&copy; 2026 杉山健太</span><a href="#" onclick="window.scrollTo(0,0);return false;">ページの先頭へ</a></div>
     </footer>
+
+    <script src="js/reveal.js"></script>
 </body>
 
 </html>

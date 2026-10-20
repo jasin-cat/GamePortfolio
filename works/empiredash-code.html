@@ -4,28 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>EmpireDash 実装コード | 杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1 class="logo"><a href="../index.html">杉山健太 ポートフォリオ</a></h1>
-            <nav>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="../index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="サイト内">
                 <ul>
                     <li><a href="../index.html#profile">プロフィール</a></li>
                     <li><a href="../index.html#skills">スキル</a></li>
-                    <li><a href="../index.html#works">作品一覧</a></li>
+                    <li><a href="../index.html#pr">自己PR</a></li>
+                    <li><a href="../index.html#works">ゲーム一覧</a></li>
                     <li><a href="../index.html#contact">連絡先</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <div class="container">
-        <main>
-            <p class="back"><a href="empiredash.html">＜ EmpireDash の作品ページに戻る</a></p>
-            <h2>EmpireDash 実装コード</h2>
-            <p>NewKentaフォルダで担当したプレイヤー制御・演出の実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
+    <main class="wrap">
+        <p class="crumb"><a href="../index.html#works">ゲーム一覧</a> ／ <a href="empiredash.html">EmpireDash</a> ／ 実装コード</p>
+        <h1 class="page-title">EmpireDash 実装コード</h1>
+        <div class="code-body">
+<p>NewKentaフォルダで担当したプレイヤー制御・演出の実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
             <div>
                 <details class="code-panel">
                     <summary>実装コードを見る：プレイヤーの状態管理</summary>
@@ -145,13 +149,11 @@ public async UniTask Fade(Func&lt;UniTask&gt; uni)
 }</code></pre>
                 </details>
             </div>
-
-            <p class="back"><a href="empiredash.html">＜ EmpireDash の作品ページに戻る</a></p>
-        </main>
-    </div>
+        </div>
+    </main>
 
     <footer>
-        <p>&copy; 2026 杉山健太</p>
+        <div class="wrap"><a href="empiredash.html">EmpireDash の作品ページに戻る</a><span>&copy; 2026 杉山健太</span></div>
     </footer>
 </body>
 </html>

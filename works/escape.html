@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape | 杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="../index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="サイト内">
+                <ul>
+                    <li><a href="../index.html#profile">プロフィール</a></li>
+                    <li><a href="../index.html#skills">スキル</a></li>
+                    <li><a href="../index.html#pr">自己PR</a></li>
+                    <li><a href="../index.html#works">ゲーム一覧</a></li>
+                    <li><a href="../index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <p class="crumb"><a href="../index.html#works">ゲーム一覧</a> ／ Escape</p>
+
+        <div class="grid">
+            <h1 class="work-title">Escape</h1>
+            <p class="work-lead">一人称視点で迷路を歩き、コインをすべて集めて出口を目指すタイムアタック。UniRxを使ったMVP構成で制作。</p>
+        </div>
+
+        <dl class="spec-strip">
+            <div>
+                <dt>ジャンル</dt>
+                <dd>一人称3D迷路脱出（タイムアタック）</dd>
+            </div>
+            <div>
+                <dt>開発期間</dt>
+                <dd>約1週間</dd>
+            </div>
+            <div>
+                <dt>チーム構成</dt>
+                <dd>個人制作</dd>
+            </div>
+            <div>
+                <dt>使用言語・エンジン</dt>
+                <dd>C# / Unity（6000.3.8f1）</dd>
+            </div>
+        </dl>
+
+        <div class="media">
+            <img class="hero-img" src="../images/escape-thumb.jpg" alt="Escape ゲーム画面">
+        </div>
+        <div class="actions"><a class="button line" href="escape-code.html">実装コードを見る</a></div>
+
+        <div class="grid">
+            <aside class="aside">
+                <div class="sticky">
+                    <p>このページの内容</p>
+                    <ol class="page-toc">
+                        <li><a href="#about">作品概要</a></li>
+                        <li><a href="#info">開発情報</a></li>
+                        <li><a href="#design">設計の工夫と選択理由</a></li>
+                        <li><a href="#challenges">苦労した点と解決方法</a></li>
+                        <li><a href="#issues">既知の課題と今後の改善予定</a></li>
+                        <li><a href="#credits">使用ライブラリ・素材</a></li>
+                    </ol>
+                </div>
+            </aside>
+
+            <div class="article">
+                <section id="about">
+                    <h2>作品概要</h2>
+                    <p>一人称視点で迷路の中を歩き回り、コインを集めて出口から脱出するゲームです。コインは決められた出現位置の中からランダムな場所に現れ、取るたびに別の位置へ移動します。必要な枚数を集めると出口の扉が開き、「Go to Exit!!」の表示とともに出口を目指します。出口に着くとクリアタイムが表示され、リスタートかタイトルに戻るかを選べます。</p>
+
+            <h3>操作方法</h3>
+            <ul>
+                <li>WASDキー：移動</li>
+                <li>マウス移動：視点の操作</li>
+            </ul>
+
+            <h3>使用技術</h3>
+            <p>Unity / C# / UniRx / UniTask / LitMotion / Input System / CharacterController / Animator / TextMesh Pro</p>
+
+            <h3>担当内容（個人制作のため全体）</h3>
+            <ul>
+                <li>Input SystemとCharacterControllerによる一人称の移動と視点操作</li>
+                <li>コインのランダム出現・取得数の管理と、全取得で扉を開く処理</li>
+                <li>出口の判定とクリア画面、クリアタイムの計測</li>
+                <li>フェードを使ったシーン遷移と、BGM・効果音の管理</li>
+            </ul>
+
+            <h3>技術解説</h3>
+            <ul>
+                <li>プレイヤー・コイン・クリア・タイムをそれぞれPresenterとViewに分け、UniRxのSubjectでイベントを通知するMVP構成にした。</li>
+                <li>機能どうしは「Connecter」クラスで購読してつなぎ、コインとクリア、クリアとタイムが互いを直接参照しないようにした。</li>
+                <li>マウスの移動量を、カメラの上下回転（角度を制限）とプレイヤー本体の左右回転に分けて反映。</li>
+                <li>フェードとシーン読み込みをUniTaskで順番に待ち、LitMotionで透明度や「Go to Exit!!」の拡大縮小をアニメーション。</li>
+                <li>AudioManagerとFadeControllerは共通のSingleton基底クラスを継承し、シーンをまたいで1つだけ存在するようにした。</li>
+            </ul>
+
+            <p><a class="button line" href="escape-code.html">Escapeの実装コードを見る</a></p>
+                </section>
+                <section id="info">
+                    <h2>開発情報</h2>
+                    <table class="facts">
+                <tr>
+                    <th>ジャンル</th>
+                    <td>一人称3D迷路脱出（タイムアタック）</td>
+                </tr>
+                <tr>
+                    <th>開発期間</th>
+                    <td>約1週間</td>
+                </tr>
+                <tr>
+                    <th>チーム構成</th>
+                    <td>個人制作</td>
+                </tr>
+                <tr>
+                    <th>担当役割</th>
+                    <td>企画・プログラム全般</td>
+                </tr>
+                <tr>
+                    <th>使用言語・エンジン</th>
+                    <td>C# / Unity（6000.3.8f1）・Universal Render Pipeline</td>
+                </tr>
+                <tr>
+                    <th>開発環境</th>
+                    <td>Visual Studio Code / GitHub</td>
+                </tr>
+                <tr>
+                    <th>公開先</th>
+                    <td><a href="../games/Escape/" target="_blank" rel="noopener noreferrer">ブラウザ版（WebGL・プレイ可能）</a></td>
+                </tr>
+                <tr>
+                    <th>ソースコード</th>
+                    <td><a href="escape-code.html">実装コードの抜粋（サイト内）</a></td>
+                </tr>
+            </table>
+                </section>
+                <section id="design">
+                    <h2>設計の工夫と選択理由</h2>
+                    <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。</p>
+            <div class="table-wrap"><table class="data-table">
+<thead><tr>
+                    <th>設計要素</th>
+                    <th>採用した方法</th>
+                    <th>ねらい</th>
+                    <th>比較した方法・避けた理由</th>
+                </tr></thead>
+<tbody>
+                <tr>
+                    <td>全体の構成</td>
+                    <td>機能ごとにPresenterとViewを分けるMVP</td>
+                    <td>表示（UI・オブジェクトの操作）と進行の処理が分かれ、どこを直せばよいか分かりやすい</td>
+                    <td>1つのクラスにまとめる → コイン・扉・UIの処理が混ざり、変更の影響範囲が広がるため</td>
+                </tr>
+                <tr>
+                    <td>機能どうしの連携</td>
+                    <td>UniRxのSubjectで通知し、Connecterクラスで購読してつなぐ</td>
+                    <td>コインやタイムのクラスがクリア処理を直接知らなくてよく、つなぎ方だけを1か所で変えられる</td>
+                    <td>お互いを直接参照して呼び出す → クラス同士の依存が増え、単体で使い回しにくいため</td>
+                </tr>
+                <tr>
+                    <td>プレイヤーの移動</td>
+                    <td>CharacterController.Move</td>
+                    <td>壁との衝突を処理しつつ、入力どおりにきびきび動かせる</td>
+                    <td>Rigidbodyに力を加える → 慣性で滑りやすく、迷路の細い通路で操作しにくいため</td>
+                </tr>
+                <tr>
+                    <td>コインの配置</td>
+                    <td>出現位置のリストからランダムに選ぶ</td>
+                    <td>毎回違う場所に現れるので、遊ぶたびにルートが変わる</td>
+                    <td>コインを最初から全部置く → 一度覚えると同じルートで回るだけになるため</td>
+                </tr>
+                <tr>
+                    <td>シーン遷移・音声</td>
+                    <td>Singleton基底クラスを継承したFadeController・AudioManager</td>
+                    <td>どのシーンからでも同じ方法で呼べて、シーンをまたいでも1つだけ残る</td>
+                    <td>シーンごとに配置 → 遷移のたびに作り直され、フェードやBGMが途切れるため</td>
+                </tr>
+            </tbody>
+</table></div>
+                </section>
+                <section id="challenges">
+                    <h2>苦労した点と解決方法</h2>
+                    <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
+                </section>
+                <section id="issues">
+                    <h2>既知の課題と今後の改善予定</h2>
+                    <h3>既知の課題</h3>
+            <ul>
+                <li>コインの移動先を選び直す処理で、再抽選の結果を返していないため、同じ位置が選ばれたときにその場に出直すことがある。</li>
+                <li>視点操作のためにカーソルを固定しているが、プレイ中にカーソルを解除する方法がない。</li>
+            </ul>
+            <h3>次に改善したい点と、その理由</h3>
+            <ul>
+                <li>コインの再抽選を、現在位置を除いたリストから選ぶ方法に変える。毎回確実に別の場所へ移動させるため。</li>
+                <li>ポーズ画面を追加し、カーソルの解除やタイトルへ戻る操作をいつでもできるようにする。</li>
+            </ul>
+                </section>
+                <section id="credits">
+                    <h2>使用ライブラリ・素材</h2>
+                    <h3>Unityライブラリ</h3>
+            <ul>
+                <li><a href="https://github.com/neuecc/UniRx">UniRx</a>（neuecc）</li>
+                <li><a href="https://github.com/Cysharp/UniTask">UniTask</a>（Cysharp）</li>
+                <li><a href="https://github.com/annulusgames/LitMotion">LitMotion</a>（AnnulusGames）</li>
+                <li>Input System / TextMesh Pro / Universal Render Pipeline（Unity Technologies）</li>
+            </ul>
+            <h3>3Dモデル・アニメーション</h3>
+            <ul>
+                <li><a href="https://www.mixamo.com/" target="_blank" rel="noopener noreferrer">Mixamo</a>（キャラクター・アニメーション）</li>
+                <li><a href="https://assetstore.unity.com/packages/3d/props/simple-gems-and-items-ultimate-animated-customizable-pack-73764">BTM Items Gems</a>（Benjathemaker、コインのモデルと回転・浮遊アニメーション）</li>
+            </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="wrap"><a href="../index.html#works">ゲーム一覧に戻る</a><span>&copy; 2026 杉山健太</span></div>
+    </footer>
+</body>
+
+</html>

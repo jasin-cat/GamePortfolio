@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper | 杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="../index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="サイト内">
+                <ul>
+                    <li><a href="../index.html#profile">プロフィール</a></li>
+                    <li><a href="../index.html#skills">スキル</a></li>
+                    <li><a href="../index.html#pr">自己PR</a></li>
+                    <li><a href="../index.html#works">ゲーム一覧</a></li>
+                    <li><a href="../index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <p class="crumb"><a href="../index.html#works">ゲーム一覧</a> ／ Minesweeper</p>
+
+        <div class="grid">
+            <h1 class="work-title">Minesweeper</h1>
+            <p class="work-lead">マインスイーパーの盤面を3Dの床にして、プレイヤーが歩いてジャンプで着地したマスを開けていくゲーム。R3とUniTask、LitMotionで制作。</p>
+        </div>
+
+        <dl class="spec-strip">
+            <div>
+                <dt>ジャンル</dt>
+                <dd>3Dアクション × マインスイーパー</dd>
+            </div>
+            <div>
+                <dt>開発期間</dt>
+                <dd>約1週間</dd>
+            </div>
+            <div>
+                <dt>チーム構成</dt>
+                <dd>個人制作</dd>
+            </div>
+            <div>
+                <dt>使用言語・エンジン</dt>
+                <dd>C# / Unity（6000.3.8f1）</dd>
+            </div>
+        </dl>
+
+        <div class="media">
+            <div class="no-image">ゲーム映像・画像を準備中</div>
+        </div>
+        <div class="actions"><a class="button line" href="minesweeper-code.html">実装コードを見る</a></div>
+
+        <div class="grid">
+            <aside class="aside">
+                <div class="sticky">
+                    <p>このページの内容</p>
+                    <ol class="page-toc">
+                        <li><a href="#about">作品概要</a></li>
+                        <li><a href="#info">開発情報</a></li>
+                        <li><a href="#design">設計の工夫と選択理由</a></li>
+                        <li><a href="#challenges">苦労した点と解決方法</a></li>
+                        <li><a href="#issues">既知の課題と今後の改善予定</a></li>
+                        <li><a href="#credits">使用ライブラリ</a></li>
+                    </ol>
+                </div>
+            </aside>
+
+            <div class="article">
+                <section id="about">
+                    <h2>作品概要</h2>
+                    <p>20×20マスのマインスイーパーを、3Dの床の上でプレイするゲームです。最初に画面のミニマップでスタート地点のマスをクリックすると、そこにプレイヤーが現れます。あとはマウスで向きを変えながら歩き、ジャンプして着地したマスが開きます。周りに爆弾がないマスは、つながった安全なマスがまとめて開きます。着地するたびに、そのマスを中心に床が波のように跳ねるアニメーションが広がります。爆弾のマスに着地するとゲームオーバーで、リセットボタンで最初からやり直せます。</p>
+
+            <h3>操作方法</h3>
+            <ul>
+                <li>マウスクリック：ミニマップでスタート地点のマスを選ぶ</li>
+                <li>マウス移動：視点の操作</li>
+                <li>Wキー：前進</li>
+                <li>スペースキー：ジャンプ（着地したマスを開ける）</li>
+            </ul>
+
+            <h3>使用技術</h3>
+            <p>Unity / C# / R3 / UniTask / LitMotion / Input System / Rigidbody / RenderTexture / TextMesh Pro / NaughtyAttributes</p>
+
+            <h3>担当内容（個人制作のため全体）</h3>
+            <ul>
+                <li>爆弾の配置と、各マスの周りにある爆弾の数を数える盤面生成</li>
+                <li>安全なマスを連鎖して開く処理と、クリア・ゲームオーバーの判定</li>
+                <li>着地したマスから同心円状に広がる床のアニメーション</li>
+                <li>ミニマップ（RenderTexture）のクリック位置をワールド座標に変換するスタート地点の選択</li>
+                <li>プレイヤーの移動・ジャンプ・視点操作と、UIの演出</li>
+            </ul>
+
+            <h3>技術解説</h3>
+            <ul>
+                <li>盤面の生成（MapGenerator）と床のアニメーション（MapAnimation）はMonoBehaviourを継承しない普通のクラスにして、MapViewがまとめて使う形にした。</li>
+                <li>マスを開く処理は、QueueとHashSetを使った幅優先探索で、周りに爆弾がないマスから隣のマスへ順に広げていく。</li>
+                <li>床のアニメーションは、着地したマスからの距離（縦横斜めのうち大きいほう）ごとに50ミリ秒ずつ遅らせて動かし、波が広がって見えるようにした。各マスはLitMotionのシーケンスで、だんだん低くなる上下運動を3回くり返す。</li>
+                <li>ミニマップを映すRawImageのクリック位置を0〜1に正規化し、専用カメラのScreenToWorldPointでワールド座標に変換してスタート地点を決める。</li>
+                <li>クリック・着地・クリア・ゲームオーバーはR3のSubjectで通知し、GameManagerが購読してマップとUIをつなぐ。</li>
+            </ul>
+
+            <p><a class="button line" href="minesweeper-code.html">Minesweeperの実装コードを見る</a></p>
+                </section>
+                <section id="info">
+                    <h2>開発情報</h2>
+                    <table class="facts">
+                <tr>
+                    <th>ジャンル</th>
+                    <td>3Dアクション × マインスイーパー</td>
+                </tr>
+                <tr>
+                    <th>開発期間</th>
+                    <td>約1週間</td>
+                </tr>
+                <tr>
+                    <th>チーム構成</th>
+                    <td>個人制作</td>
+                </tr>
+                <tr>
+                    <th>担当役割</th>
+                    <td>企画・プログラム全般</td>
+                </tr>
+                <tr>
+                    <th>使用言語・エンジン</th>
+                    <td>C# / Unity（6000.3.8f1）・Universal Render Pipeline</td>
+                </tr>
+                <tr>
+                    <th>開発環境</th>
+                    <td><span class="todo">【要記入】エディタ（Visual Studio Code / Rider など）</span> / GitHub</td>
+                </tr>
+                <tr>
+                    <th>公開先</th>
+                    <td><a href="../games/Minesweeper/" target="_blank" rel="noopener noreferrer">ブラウザ版（WebGL・プレイ可能）</a></td>
+                </tr>
+                <tr>
+                    <th>ソースコード</th>
+                    <td><a href="minesweeper-code.html">実装コードの抜粋（サイト内）</a></td>
+                </tr>
+            </table>
+                </section>
+                <section id="design">
+                    <h2>設計の工夫と選択理由</h2>
+                    <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。</p>
+            <div class="table-wrap"><table class="data-table">
+<thead><tr>
+                    <th>設計要素</th>
+                    <th>採用した方法</th>
+                    <th>ねらい</th>
+                    <th>比較した方法・避けた理由</th>
+                </tr></thead>
+<tbody>
+                <tr>
+                    <td>マップのクラス分け</td>
+                    <td>生成とアニメーションを普通のクラスにし、MapViewが持つ</td>
+                    <td>Unityのシーンに置かなくても使え、生成とアニメーションの処理を別々に直せる</td>
+                    <td>MapViewにすべて書く → 盤面の計算と演出が1つのクラスに混ざり、読みにくくなるため</td>
+                </tr>
+                <tr>
+                    <td>マスを連鎖して開く</td>
+                    <td>QueueとHashSetを使った幅優先探索</td>
+                    <td>訪れたマスを記録して同じマスを何度も調べず、近いマスから順に開ける</td>
+                    <td>再帰で隣を開く → 広い範囲が一度に開くと呼び出しが深くなり、処理を追いにくいため</td>
+                </tr>
+                <tr>
+                    <td>床のアニメーション</td>
+                    <td>着地点からの距離ごとに少しずつ遅らせ、LitMotionで上下させる</td>
+                    <td>着地点から波が広がるように見え、どこに着地したかが分かりやすい</td>
+                    <td>全マスを同時に動かす → 床全体が揺れるだけで、着地点が伝わりにくいため</td>
+                </tr>
+                <tr>
+                    <td>ジャンプ</td>
+                    <td>sinカーブで高さを決め、Transformの位置を直接動かす</td>
+                    <td>毎回同じ高さ・同じ時間で着地するので、狙ったマスに降りやすい</td>
+                    <td>Rigidbodyに速度を与える方法も試作（RigidJump）→ 着地までの時間が物理の状態で変わりやすいため</td>
+                </tr>
+                <tr>
+                    <td>スタート地点の選び方</td>
+                    <td>ミニマップのRawImageをクリックし、専用カメラでワールド座標に変換</td>
+                    <td>盤面全体を見ながら、好きなマスから始められる</td>
+                    <td>決まった位置から始める → 毎回同じところから探すことになり、遊び方が単調になるため</td>
+                </tr>
+                <tr>
+                    <td>機能どうしの連携</td>
+                    <td>R3のSubjectで通知し、GameManagerで購読してつなぐ</td>
+                    <td>マップとUIがお互いを直接知らなくてよい</td>
+                    <td>直接メソッドを呼び合う → クラス同士の依存が増えるため</td>
+                </tr>
+            </tbody>
+</table></div>
+                </section>
+                <section id="challenges">
+                    <h2>苦労した点と解決方法</h2>
+                    <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
+                    <p><span class="todo">【要記入】苦労した点（例：ミニマップのクリック位置がずれた、床のアニメーション中にプレイヤーが落ちた など）と、その原因・対策</span></p>
+                </section>
+                <section id="issues">
+                    <h2>既知の課題と今後の改善予定</h2>
+                    <h3>既知の課題</h3>
+            <ul>
+                <li>クリア判定が爆弾のマスも含めて「全マスが開いているか」を見ているため、爆弾以外をすべて開けてもクリアにならない。</li>
+                <li>爆弾の位置を選ぶ乱数の範囲が1つ狭く、いちばん端の列と行には爆弾が置かれない。</li>
+                <li>最初に選んだマスが爆弾の場合、そのままゲームオーバーになる。</li>
+                <li>Wキーを離したときの減速が1フレームで終わり、すぐに止まってしまう。</li>
+            </ul>
+            <h3>次に改善したい点と、その理由</h3>
+            <ul>
+                <li>クリア判定を「爆弾以外のマスがすべて開いたか」に直す。最後までクリアできるようにするため。</li>
+                <li>乱数の範囲を盤面の端まで含め、最初に選んだマスとその周りには爆弾を置かないようにする。運だけで負ける場面をなくすため。</li>
+                <li>減速を数フレームかけて行い、旗を立てる操作も追加する。マインスイーパーらしい推理をしやすくするため。</li>
+            </ul>
+                </section>
+                <section id="credits">
+                    <h2>使用ライブラリ</h2>
+                    <h3>Unityライブラリ</h3>
+            <ul>
+                <li><a href="https://github.com/Cysharp/R3">R3</a>（Cysharp）</li>
+                <li><a href="https://github.com/Cysharp/UniTask">UniTask</a>（Cysharp）</li>
+                <li><a href="https://github.com/annulusgames/LitMotion">LitMotion</a>（AnnulusGames）</li>
+                <li><a href="https://github.com/dbrizov/NaughtyAttributes">NaughtyAttributes</a>（dbrizov）</li>
+                <li><a href="https://github.com/GlitchEnzo/NuGetForUnity">NuGetForUnity</a>（GlitchEnzo）</li>
+                <li>Input System / TextMesh Pro / Universal Render Pipeline（Unity Technologies）</li>
+            </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="wrap"><a href="../index.html#works">ゲーム一覧に戻る</a><span>&copy; 2026 杉山健太</span></div>
+    </footer>
+</body>
+
+</html>

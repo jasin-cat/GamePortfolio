@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Escape 実装コード | 杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="../index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="サイト内">
+                <ul>
+                    <li><a href="../index.html#profile">プロフィール</a></li>
+                    <li><a href="../index.html#skills">スキル</a></li>
+                    <li><a href="../index.html#pr">自己PR</a></li>
+                    <li><a href="../index.html#works">ゲーム一覧</a></li>
+                    <li><a href="../index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <p class="crumb"><a href="../index.html#works">ゲーム一覧</a> ／ <a href="escape.html">Escape</a> ／ 実装コード</p>
+        <h1 class="page-title">Escape 実装コード</h1>
+        <div class="code-body">
+<p>一人称の移動・視点操作、コインの出現と取得、クリア判定、シーン遷移の実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
+            <div>
+                <details class="code-panel">
+                    <summary>実装コードを見る：機能どうしをつなぐConnecter</summary>
+                    <p class="code-description">コインのPresenterが通知する「取得数／最大数」を購読し、すべて取ったときだけクリア側に扉を開かせます。コインとクリアのクラスは互いを参照せず、つなぎ方をこのクラスにまとめています。</p>
+                    <pre tabindex="0" aria-label="Escapeの機能どうしをつなぐConnecter コード"><code class="language-csharp">// ClearCoinConnecter.cs
+public class ClearCoinConnecter : MonoBehaviour
+{
+    [SerializeField] private GameClearPresenter _clear;
+    [SerializeField] private CoinPresenter _coin;
+
+    private void Awake()
+    {
+        _coin.GetCoin
+            .Where(x =&gt; x.num == x.maxNum)
+            .Subscribe(x =&gt;
+            {
+                _clear.GetAllCoin();
+                _coin.Init();
+            }).AddTo(this);
+
+        _coin.GetCoin
+            .Subscribe(x =&gt;
+            {
+                _clear.GetCoin(x.num, x.maxNum);
+            }).AddTo(this);
+    }
+}
+
+// PlayerClearConnecter.cs より抜粋（クラス内の一部）
+private void Start()
+{
+    _clearCollider.GameClear
+        .Where(x =&gt; x == _player.CharacterController)
+        .Subscribe(_ =&gt;
+        {
+            _player.GameClear();
+            _gameClear.ShowPanel();
+
+            _gameClear.CancelGetCoinTextAnim();
+        }).AddTo(this);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：コインの取得とランダム移動</summary>
+                    <p class="code-description">Viewが通知した当たり判定のうち、プレイヤーのものだけを取り出して取得数を通知します。取得するたびに出現位置のリストからランダムに選び、次の場所へ移動させます。</p>
+                    <pre tabindex="0" aria-label="Escapeのコインの取得とランダム移動 コード"><code class="language-csharp">// Coin/CoinPresenter.cs より抜粋（クラス内の一部）
+private Subject&lt;(int num, int maxNum)&gt; _subject = new();
+public IObservable&lt;(int num, int maxNum)&gt; GetCoin =&gt; _subject;
+
+private void OnEnable()
+{
+    int random = UnityEngine.Random.Range(0, _view.AppearPositionsCount);
+    _coinAim.SetInitialPosition(_view.MoveRandomPosition(random));
+
+    _getKeySubscription = _view.GetCoin
+        .Where(x =&gt; x == _playerCollider)
+        .Subscribe(_ =&gt;
+        {
+            _subject.OnNext((num: _view.GetCoinNum, maxNum: _view.AppearPositionsCount));
+
+            int random = UnityEngine
+                .Random.Range(0, _view.AppearPositionsCount);
+            _coinAim.SetInitialPosition(_view.MoveRandomPosition(random));
+        });
+}
+
+private void OnDisable()
+{
+    _getKeySubscription.Dispose();
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：一人称の移動</summary>
+                    <p class="code-description">Input Systemで読み取った入力を、プレイヤーの向きを基準にした移動方向に変換します。正規化して斜め移動が速くならないようにし、CharacterControllerで壁との衝突を処理しながら動かします。</p>
+                    <pre tabindex="0" aria-label="Escapeの一人称の移動 コード"><code class="language-csharp">// Player/PlayerMovement.cs より抜粋（クラス内の一部）
+public void Movement()
+{
+    _moveInput = _input.Player.Move.ReadValue&lt;Vector2&gt;();
+
+    _velocity = transform.right * _moveInput.x + transform.forward * _moveInput.y;
+
+    _velocity.Normalize();
+
+    _charaController.Move(_velocity * _speed * Time.deltaTime);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：視点操作</summary>
+                    <p class="code-description">マウスの縦の移動量はカメラの上下回転に使い、真上・真下を超えないよう-90〜90度に制限します。横の移動量はプレイヤー本体を回転させ、移動方向と視点の向きをそろえています。</p>
+                    <pre tabindex="0" aria-label="Escapeの視点操作 コード"><code class="language-csharp">// Player/RotationNeck.cs より抜粋（クラス内の一部）
+private void OnEnable()
+{
+    //Cursorを中心に固定して消す
+    Cursor.visible = false;
+    Cursor.lockState = CursorLockMode.Locked;
+    _input = new();
+    _input.Enable();
+}
+
+private void MouseLook()
+{
+    _lookVelocity = _input.Cursor.Look.ReadValue&lt;Vector2&gt;();
+
+    float x = _lookVelocity.x * _sensitivity;
+    float y = _lookVelocity.y * _sensitivity;
+
+    _rotation -= y;
+    _rotation = Mathf.Clamp(_rotation, -90, 90);
+
+    // cameraを動かす
+    _camera.transform.localRotation = Quaternion.Euler(_rotation, 0f, 0f);
+
+    // playerの体を動かす
+    transform.Rotate(Vector3.up * x);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：全取得時の演出</summary>
+                    <p class="code-description">コインをすべて集めると「Go to Exit!!」を表示し、LitMotionで拡大縮小をくり返します。クリアしたときにCancellationTokenSourceでアニメーションを止めます。</p>
+                    <pre tabindex="0" aria-label="Escapeの全取得時の演出 コード"><code class="language-csharp">// Clear/GameClearView.cs より抜粋（クラス内の一部）
+private CancellationTokenSource _cancelSource = new();
+public CancellationTokenSource CancelSource =&gt; _cancelSource;
+
+public void GetAllCoin()
+{
+    _getAllCoinText.text = "Go to Exit!!";
+    LMotion.Create(from: _minGetAllCoinTextScale,
+        to: _maxGetAllCoinTextScale,
+        duration: _getAllCoinTextDuration)
+            .WithLoops(-1, LoopType.Yoyo)
+            .BindToLocalScaleXY(_getAllCoinText.transform)
+            .ToUniTask(cancellationToken: _cancelSource.Token,
+            cancelBehavior: CancelBehavior.Cancel);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：フェード付きのシーン遷移</summary>
+                    <p class="code-description">画面を暗くするフェードの時間だけUniTaskで待ってからシーンを読み込み、読み込みが終わったらSubjectに通知してフェードを明けます。FadeControllerはSingletonなので、シーンをまたいでも同じオブジェクトが使われます。</p>
+                    <pre tabindex="0" aria-label="Escapeのフェード付きのシーン遷移 コード"><code class="language-csharp">// Fade/FadeController.cs より抜粋（クラス内の一部）
+public class FadeController : Singleton&lt;FadeController&gt;
+{
+    protected override void Awake()
+    {
+        base.Awake();
+
+        _subject.Subscribe(_ =&gt; FadeOut()).AddTo(this);
+        _subject.OnNext(Unit.Default);
+    }
+
+    public void FadeIn()
+    {
+        LMotion.Create(from: minFadeValue, to: maxFadeValue, duration)
+            .Bind(x =&gt; _canvasGroup.alpha = x).AddTo(this);
+    }
+
+    public async UniTask RestartFade()
+    {
+        FadeIn();
+        await UniTask.WaitForSeconds(duration);
+        await SceneManager.LoadSceneAsync("MainScene");
+        _subject.OnNext(Unit.Default);
+    }
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：Singletonの基底クラス</summary>
+                    <p class="code-description">ジェネリックな基底クラスにして、AudioManagerやFadeControllerが継承するだけでSingletonになるようにしています。2つ目が作られたときは自分を破棄し、1つだけが残ります。</p>
+                    <pre tabindex="0" aria-label="EscapeのSingletonの基底クラス コード"><code class="language-csharp">// Singleton/Singleton.cs
+public class Singleton&lt;T&gt; : MonoBehaviour where T : Singleton&lt;T&gt;
+{
+    private static T _instance;
+    public static T Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindAnyObjectByType&lt;T&gt;();
+
+                if (_instance == null)
+                {
+                    var s = new GameObject(typeof(T).Name);
+                    _instance = s.AddComponent&lt;T&gt;();
+                }
+            }
+            return _instance;
+        }
+    }
+
+    protected virtual void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this as T;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (_instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+}</code></pre>
+                </details>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="wrap"><a href="escape.html">Escape の作品ページに戻る</a><span>&copy; 2026 杉山健太</span></div>
+    </footer>
+</body>
+</html>

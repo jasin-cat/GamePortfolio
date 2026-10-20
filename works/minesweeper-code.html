@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Minesweeper 実装コード | 杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="../index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="サイト内">
+                <ul>
+                    <li><a href="../index.html#profile">プロフィール</a></li>
+                    <li><a href="../index.html#skills">スキル</a></li>
+                    <li><a href="../index.html#pr">自己PR</a></li>
+                    <li><a href="../index.html#works">ゲーム一覧</a></li>
+                    <li><a href="../index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <p class="crumb"><a href="../index.html#works">ゲーム一覧</a> ／ <a href="minesweeper.html">Minesweeper</a> ／ 実装コード</p>
+        <h1 class="page-title">Minesweeper 実装コード</h1>
+        <div class="code-body">
+<p>盤面の生成、マスを連鎖して開く処理、床のアニメーション、スタート地点の選択、ジャンプの実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
+            <div>
+                <details class="code-panel">
+                    <summary>実装コードを見る：安全なマスを連鎖して開く</summary>
+                    <p class="code-description">着地したマスが爆弾ならゲームオーバーを通知します。そうでなければQueueとHashSetで幅優先探索を行い、周りに爆弾がないマスから隣のマスへ順に開いていきます。周りに爆弾があるマスは、その数の画像を表示してそこで止めます。</p>
+                    <pre tabindex="0" aria-label="Minesweeperの安全なマスを連鎖して開く コード"><code class="language-csharp">// Map/MapView.cs より抜粋（クラス内の一部）
+public void OpenBlock(Vector2Int start)
+{
+    if (_blocks[start.x, start.y].Type is BlockType.bomb)
+    {
+        // ゲームオーバー
+        _onGameOver.OnNext(Unit.Default);
+        return;
+    }
+
+    Queue&lt;Vector2Int&gt; queue = new();
+    HashSet&lt;Vector2Int&gt; visited = new();
+
+    queue.Enqueue(start);
+    visited.Add(start);
+
+    while(queue.Count &gt; 0)
+    {
+        Vector2Int current = queue.Dequeue();
+        Block block = _blocks[current.x, current.y];
+
+        if (block.IsOpened) continue;
+
+        Texture texture = null;
+        if (block.SurroundBombCount &gt; 0)
+        {
+            texture = _blockTextures[block.SurroundBombCount - 1];
+        }
+        block.Open(texture);
+
+        // 周りに爆弾がある場合は止める
+        if (block.SurroundBombCount &gt; 0) continue;
+
+        foreach (var neighbor in GetNeighbors(current, _width))
+        {
+            if (visited.Contains(neighbor)) continue;
+            if (_blocks[neighbor.x, neighbor.y].Type is BlockType.bomb) continue;
+
+            visited.Add(neighbor);
+            queue.Enqueue(neighbor);
+        }
+    }
+}
+
+private IEnumerable&lt;Vector2Int&gt; GetNeighbors(Vector2Int pos, int width)
+{
+    for (int dx = -1; dx &lt;= 1; dx++)
+    {
+        for (int dy = -1; dy &lt;= 1; dy++)
+        {
+            if (dx is 0 &amp;&amp; dy is 0) continue;
+            int nx = pos.x + dx;
+            int ny = pos.y + dy;
+
+            if (nx &lt; 0 || nx &gt;= width
+                || ny &lt; 0 || ny &gt;= width) continue;
+
+            yield return new Vector2Int(nx, ny);
+        }
+    }
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：着地点から広がる床のアニメーション</summary>
+                    <p class="code-description">着地したマスからの距離（縦・横・斜めのうち大きいほう）が同じマスをまとめて動かし、距離が1つ増えるごとに50ミリ秒待ちます。これで着地点を中心に波が広がるように見えます。アニメーション中に次の着地があっても重ならないよう、フラグで止めています。</p>
+                    <pre tabindex="0" aria-label="Minesweeperの着地点から広がる床のアニメーション コード"><code class="language-csharp">// Map/MapAnimation.cs より抜粋（クラス内の一部）
+public async UniTask AnimationAsync(Vector3 pos)
+{
+    if (_isAnimating) return;
+    _isAnimating = true;
+
+    // （着地したマスの添字 x, y を探す処理は省略）
+
+    int maxDist = Mathf.Max(
+        _blocks.GetLength(0),
+        _blocks.GetLength(1)
+    );
+
+    for (int dist = 0; dist &lt; maxDist; dist++)
+    {
+        for (int i = 0; i &lt; _blocks.GetLength(0); i++)
+        {
+            for (int j = 0; j &lt; _blocks.GetLength(1); j++)
+            {
+                int currentDist = Mathf.Max(
+                    Mathf.Abs(i - x),
+                    Mathf.Abs(j - y)
+                );
+
+                if (currentDist != dist) continue;
+
+                Block target = _blocks[i, j];
+
+                if (target is null) continue;
+
+                target.AnimationAsync(0.5f).Forget();
+            }
+        }
+
+        await UniTask.Delay(50);
+    }
+
+    _isAnimating = false;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：マス1つの上下運動（LitMotion）</summary>
+                    <p class="code-description">LitMotionのシーケンスで、上がって戻る動きを高さ1、1/2、1/3の順に3回つなげます。Rigidbodyの位置をFixedUpdateのタイミングでMovePositionするので、上に乗っているプレイヤーも物理演算で一緒に押し上げられます。</p>
+                    <pre tabindex="0" aria-label="Minesweeperのマス1つの上下運動 コード"><code class="language-csharp">// Map/Block.cs より抜粋（クラス内の一部）
+public async UniTask AnimationAsync(float maxUpValue)
+{
+    await LSequence.Create()
+        .Append(LitmotionHandle(maxUpValue, duration: 0.5f))
+        .Append(LitmotionHandle(maxUpValue / 2, duration: 0.3f))
+        .Append(LitmotionHandle(maxUpValue / 3, duration: 0.2f))
+        .Run();
+}
+
+private MotionHandle LitmotionHandle(float maxUpValue, float duration)
+{
+    float start = _rb.position.y;
+    float target = _rb.position.y + maxUpValue;
+    return LMotion.Create(start, target, duration)
+        .WithLoops(2, loopType: LoopType.Yoyo)
+        .WithScheduler(MotionScheduler.FixedUpdate)
+        .Bind(y =&gt;
+        {
+            Vector3 pos = _rb.position;
+            pos.y = y;
+            _rb.MovePosition(pos);
+        });
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：ミニマップのクリック位置をワールド座標に変換</summary>
+                    <p class="code-description">RawImage上のクリック位置をローカル座標に直し、画像のサイズで割って0〜1に正規化します。それをミニマップ用カメラの画面座標に変換し、ScreenToWorldPointでワールド座標を求めて通知します。</p>
+                    <pre tabindex="0" aria-label="Minesweeperのミニマップのクリック位置をワールド座標に変換 コード"><code class="language-csharp">// UI/RenderTextureGetWorldPosition.cs より抜粋（クラス内の一部）
+public void OnPointerClick(PointerEventData eventData)
+{
+    RectTransform rect = _rawImage.rectTransform;
+
+    if (RectTransformUtility
+        .ScreenPointToLocalPointInRectangle(
+            rect,
+            eventData.position,
+            eventData.pressEventCamera,
+            out Vector2 localPoint))
+    {
+        // _rawImageのサイズを取得
+        Vector2 size = rect.rect.size;
+        // サイズをNormalizeしてほしい押したポジションを取得
+        Vector2 normalizePosition = new Vector2(
+            (localPoint.x - rect.rect.x) / size.x,
+            (localPoint.y - rect.rect.y) / size.y
+        );
+
+        Vector3 screenPos = new Vector3(
+            normalizePosition.x * _riCamera.pixelWidth,
+            normalizePosition.y * _riCamera.pixelHeight,
+            _targetDistanceZ
+        );
+
+        Vector3 worldPos = _riCamera.ScreenToWorldPoint(screenPos);
+        _onClickRawImageWorldPos.OnNext(worldPos);
+    }
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：sinカーブのジャンプと着地の通知</summary>
+                    <p class="code-description">経過時間を0〜1に直し、0〜πのsinで高さを決めるので、毎回同じ高さ・同じ時間で着地します。着地したらSubjectで通知し、GameManagerがその位置のマスを開いて床のアニメーションを始めます。</p>
+                    <pre tabindex="0" aria-label="Minesweeperのsinカーブのジャンプと着地の通知 コード"><code class="language-csharp">// Player/PlayerJump.cs より抜粋（クラス内の一部）
+public async UniTask Jump(float height, float maxTime)
+{
+    if (_isJumping)
+    {
+        return;
+    }
+    _isJumping = true;
+
+    float startY = _transform.position.y;
+    float timer = 0;
+
+    while (timer &lt; maxTime)
+    {
+        timer += Time.deltaTime;
+        // 0 ~ 1
+        float t = timer / maxTime;
+        // 0　~　π
+        float rad = t * Mathf.PI;
+        // 0 ~ 1
+        float y = Mathf.Sin(rad);
+        // startY ~ height + _transform.position.y ~ startY
+        float currentY = startY + y * height;
+
+        _transform.position = new Vector3
+        (
+            _transform.position.x,
+            currentY,
+            _transform.position.z
+        );
+        await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
+    }
+
+    _transform.position = new Vector3
+    (
+        _transform.position.x,
+        startY,
+        _transform.position.z
+    );
+
+    _onDoneJumping.OnNext(Unit.Default);
+    _isJumping = false;
+}
+
+// GameManger.cs より抜粋（クラス内の一部）
+private void SetPlayer(Vector3 v)
+{
+    _player = Instantiate(_playerPrefab, v, Quaternion.identity);
+    _player.DoneJumping
+        .Subscribe(pos =&gt;
+        {
+            _mapView.SetCurrentSelectBlock(pos);
+            _mapView.anim(pos);
+        }).AddTo(this);
+}</code></pre>
+                </details>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="wrap"><a href="minesweeper.html">Minesweeper の作品ページに戻る</a><span>&copy; 2026 杉山健太</span></div>
+    </footer>
+</body>
+</html>

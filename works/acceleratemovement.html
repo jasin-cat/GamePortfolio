@@ -5,53 +5,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AccelerateMovement | 杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <h1 class="logo"><a href="../index.html">杉山健太 ポートフォリオ</a></h1>
-            <nav>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="../index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="サイト内">
                 <ul>
                     <li><a href="../index.html#profile">プロフィール</a></li>
                     <li><a href="../index.html#skills">スキル</a></li>
-                    <li><a href="../index.html#works">作品一覧</a></li>
+                    <li><a href="../index.html#pr">自己PR</a></li>
+                    <li><a href="../index.html#works">ゲーム一覧</a></li>
                     <li><a href="../index.html#contact">連絡先</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <div class="container">
-        <main>
-            <p class="back"><a href="../index.html#works">＜ 作品一覧に戻る</a></p>
+    <main class="wrap">
+        <p class="crumb"><a href="../index.html#works">ゲーム一覧</a> ／ AccelerateMovement</p>
 
-            <h2>AccelerateMovement<span class="status">完成</span></h2>
-            <p>敵の出現・攻撃演出と、フェード・ランキング機能を担当。</p>
+        <div class="grid">
+            <h1 class="work-title">AccelerateMovement</h1>
+            <p class="work-lead">敵の出現・攻撃演出と、フェード・ランキング機能を担当。</p>
+        </div>
 
-            <!-- 目次 -->
-            <ul class="page-menu">
-                <li><a href="#about">作品概要</a></li>
-                <li><a href="#info">開発情報</a></li>
-                <li><a href="#design">設計の工夫と選択理由</a></li>
-                <li><a href="#challenges">苦労した点と解決方法</a></li>
-                <li><a href="#issues">既知の課題と今後の改善予定</a></li>
-                <li><a href="#credits">使用ライブラリ・素材</a></li>
-                <li><a href="acceleratemovement-code.html">実装コード</a></li>
-            </ul>
+        <dl class="spec-strip">
+            <div>
+                <dt>ジャンル</dt>
+                <dd>加速して進む2D横スクロールアクション（タイムアタック）</dd>
+            </div>
+            <div>
+                <dt>開発期間（開発に関わった期間）</dt>
+                <dd>2026年7月〜2026年9月（約1ヶ月半）</dd>
+            </div>
+            <div>
+                <dt>チーム構成</dt>
+                <dd>プログラマー6名・プランナー3名・デザイナー2名&emsp;&emsp;計11名</dd>
+            </div>
+            <div>
+                <dt>使用言語・エンジン</dt>
+                <dd>C# / Unity（6000.3.8f1）</dd>
+            </div>
+        </dl>
 
-            <!-- プレイ動画（まだ無いのでタイトル画像を表示） -->
-            <img src="../images/accelerate-thumb.jpg" alt="AccelerateMovement タイトル画面">
+        <div class="media">
+            <img class="hero-img" src="../images/accelerate-thumb.jpg" alt="AccelerateMovement タイトル画面">
             <p class="small"><span class="todo">【要記入】プレイ動画 / 作品ページのリンク（動画があれば EmpireDash と同じ movie の iframe に差し替え）</span></p>
+        </div>
+        <div class="actions"><a class="button line" href="acceleratemovement-code.html">実装コードを見る</a></div>
 
-            <h3 id="about">作品概要</h3>
-            <p>走るほど加速していく2Dの横スクロールアクションゲームです。一定以上のスピードで敵を倒しながら進み、ボスを倒すまでのクリアタイムをランキングで競います。チームで制作し、私は敵の出現・攻撃演出と、シーン遷移のフェード・ランキング機能を担当しました。</p>
+        <div class="grid">
+            <aside class="aside">
+                <div class="sticky">
+                    <p>このページの内容</p>
+                    <ol class="page-toc">
+                        <li><a href="#about">作品概要</a></li>
+                        <li><a href="#info">開発情報</a></li>
+                        <li><a href="#design">設計の工夫と選択理由</a></li>
+                        <li><a href="#challenges">苦労した点と解決方法</a></li>
+                        <li><a href="#issues">既知の課題と今後の改善予定</a></li>
+                        <li><a href="#credits">使用ライブラリ・素材</a></li>
+                    </ol>
+                </div>
+            </aside>
 
-            <h4>使用技術</h4>
+            <div class="article">
+                <section id="about">
+                    <h2>作品概要</h2>
+                    <p>走るほど加速していく2Dの横スクロールアクションゲームです。一定以上のスピードで敵を倒しながら進み、ボスを倒すまでのクリアタイムをランキングで競います。チームで制作し、私は敵の出現・攻撃演出と、シーン遷移のフェード・ランキング機能を担当しました。</p>
+
+            <h3>使用技術</h3>
             <p>Unity / C# / UniTask / R3 / LitMotion / NaughtyAttributes / Object Pool / Singleton / ShaderLab（自作シェーダー） / MaterialPropertyBlock / Rigidbody2D</p>
 
-            <h4>担当内容</h4>
+            <h3>担当内容</h3>
             <ul>
                 <li>敵の生成（オブジェクトプール）・移動・攻撃の制御</li>
                 <li>敵の攻撃予告ラインの演出とシェーダー</li>
@@ -59,7 +91,7 @@
                 <li>クリアタイムのランキング（保存・並び替え・表示）とリザルト画面</li>
             </ul>
 
-            <h4>技術解説</h4>
+            <h3>技術解説</h3>
             <ul>
                 <li>オブジェクトプールで敵を使い回し、生成・破棄のコストを抑制。</li>
                 <li>R3のReactivePropertyでプレイヤーの速度を監視し、敵の速度を追従させる。</li>
@@ -67,21 +99,22 @@
                 <li>自作シェーダーとMaterialPropertyBlockで、マテリアルを複製せずに透明度・アウトラインを変更。</li>
             </ul>
 
-            <p><a class="code-link" href="acceleratemovement-code.html">AccelerateMovementの実装コードを見る</a></p>
-
-            <h3 id="info">開発情報</h3>
-            <table>
+            <p><a class="button line" href="acceleratemovement-code.html">AccelerateMovementの実装コードを見る</a></p>
+                </section>
+                <section id="info">
+                    <h2>開発情報</h2>
+                    <table class="facts">
                 <tr>
                     <th>ジャンル</th>
                     <td>加速して進む2D横スクロールアクション（タイムアタック）</td>
                 </tr>
                 <tr>
-                    <th>開発期間</th>
-                    <td>2026年7月〜2026年9月（約1ヶ月半）<span class="todo">【要確認】プロジェクトファイルの日付から推定</span></td>
+                    <th>開発期間（開発に関わった期間）</th>
+                    <td>2026年7月〜2026年9月（約1ヶ月半）</td>
                 </tr>
                 <tr>
                     <th>チーム構成</th>
-                    <td><span class="todo">【要記入】例：プログラマー〇名・プランナー〇名・デザイナー〇名&emsp;&emsp;計〇名</span></td>
+                    <td>プログラマー6名・プランナー3名・デザイナー2名&emsp;&emsp;計11名</td>
                 </tr>
                 <tr>
                     <th>担当役割</th>
@@ -93,27 +126,27 @@
                 </tr>
                 <tr>
                     <th>開発環境</th>
-                    <td><span class="todo">【要記入】例：Visual Studio Code / GitHub</span></td>
-                </tr>
-                <tr>
-                    <th>公開先</th>
-                    <td><span class="todo">【要記入】作品ページのURL（無ければこの行を削除）</span></td>
+                    <td>Visual Studio Code / GitHub</td>
                 </tr>
                 <tr>
                     <th>ソースコード</th>
                     <td><a href="acceleratemovement-code.html">実装コードの抜粋（サイト内）</a></td>
                 </tr>
             </table>
-
-            <h3 id="design">設計の工夫と選択理由</h3>
-            <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。</p>
-            <table class="design-table">
+                </section>
+                <section id="design">
+                    <h2>設計の工夫と選択理由</h2>
+                    <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。</p>
+            <div class="table-wrap"><table class="data-table">
+            <thead>
                 <tr>
                     <th>設計要素</th>
                     <th>採用した方法</th>
                     <th>ねらい</th>
                     <th>比較した方法・避けた理由</th>
                 </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <td>敵の生成</td>
                     <td>オブジェクトプール（Stackで管理）</td>
@@ -127,7 +160,7 @@
                     <td>敵が毎フレームプレイヤーの値を直接参照 → クラス同士が密結合になるため</td>
                 </tr>
                 <tr>
-                    <td>ボス戦開始時の敵の片付け</td>
+                    <td>ボス戦開始時の<br>敵の片付け</td>
                     <td>R3で出現終了を通知し、各敵が自分でプールに戻る</td>
                     <td>プール側は通知するだけで、画面上の敵をまとめて回収できる</td>
                     <td>敵を全て検索して非表示にする → 検索の手間がかかり、回収漏れが起きやすいため</td>
@@ -150,41 +183,42 @@
                     <td>マテリアルを複製せずに、敵ごとに透明度やアウトラインを変えられる</td>
                     <td>renderer.materialを直接変更 → 敵ごとにマテリアルが複製されるため</td>
                 </tr>
-            </table>
-
-            <h3 id="challenges">苦労した点と解決方法</h3>
-            <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
-            <h4>課題1：ボス戦が始まっても通常の敵が画面に残る<span class="todo">【要確認】コードから推定した内容です</span></h4>
-            <table>
-                <tr>
-                    <th>現象</th>
-                    <td>ボス戦が始まったあとも、それまでに出現した通常の敵がプレイヤーを追いかけ続けていた。</td>
-                </tr>
-                <tr>
-                    <th>原因</th>
-                    <td>敵の出現を止めるだけで、すでに出現している敵をプールに戻す処理がなかった。</td>
-                </tr>
-                <tr>
-                    <th>対策</th>
-                    <td>
-                        プール側にR3のReactivePropertyを用意し、ボス戦の開始を通知するようにした。
-                        各敵はこの通知を購読して自分でプールに戻るため、プール側で敵を探す必要がなくなった。
-                    </td>
-                </tr>
-            </table>
-
-            <h3 id="issues">既知の課題と今後の改善予定</h3>
-            <h4>既知の課題</h4>
+            </tbody>
+</table></div>
+                </section>
+                <section id="challenges">
+                    <h2>苦労した点と解決方法</h2>
+                    <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
+            <h3>課題1：ボス戦が始まっても通常の敵が画面に残る</h3>
+            <div class="steps">
+                <div>
+                    <b>現象</b>
+                    <p>ボス戦が始まったあとも、それまでに出現した通常の敵がプレイヤーを追いかけ続けていた。</p>
+                </div>
+                <div>
+                    <b>原因</b>
+                    <p>敵の出現を止めるだけで、すでに出現している敵をプールに戻す処理がなかった。</p>
+                </div>
+                <div>
+                    <b>対策</b>
+                    <p>プール側にR3のReactivePropertyを用意し、ボス戦の開始を通知するようにした。 各敵はこの通知を購読して自分でプールに戻るため、プール側で敵を探す必要がなくなった。</p>
+                </div>
+            </div>
+                </section>
+                <section id="issues">
+                    <h2>既知の課題と今後の改善予定</h2>
+                    <h3>既知の課題</h3>
             <ul>
                 <li>ランキングのデータはメモリ上に保持しているだけなので、ゲームを終了するとリセットされてしまう。</li>
             </ul>
-            <h4>次に改善したい点と、その理由</h4>
+            <h3>次に改善したい点と、その理由</h3>
             <ul>
                 <li>ランキングをJSONファイルに保存し、ゲームを再起動しても記録が残るようにする。</li>
             </ul>
-
-            <h3 id="credits">使用ライブラリ・素材</h3>
-            <h4>Unityライブラリ</h4>
+                </section>
+                <section id="credits">
+                    <h2>使用ライブラリ・素材</h2>
+                    <h3>Unityライブラリ</h3>
             <ul>
                 <li><a href="https://github.com/Cysharp/UniTask">UniTask</a>（Cysharp）</li>
                 <li><a href="https://github.com/Cysharp/R3">R3</a>（Cysharp）</li>
@@ -195,21 +229,21 @@
                 <li><a href="http://kan-kikuchi.hatenablog.com/entry/AfterImageEffect2D">AfterImageEffect2D</a>（kan.kikuchi）</li>
                 <li>Input System / TextMesh Pro / Universal Render Pipeline / 2D Tilemap（Unity Technologies）</li>
             </ul>
-            <h4>サウンド</h4>
+            <h3>サウンド</h3>
             <ul>
                 <li>OpenTracks / Audiostock</li>
             </ul>
-            <h4>フォント</h4>
+            <h3>フォント</h3>
             <ul>
                 <li>Noto Sans JP / Big Shoulders Stencil / DSEG7 Classic Mini / Digital Desolation Plus / なぎの</li>
             </ul>
-
-            <p class="back"><a href="../index.html#works">＜ 作品一覧に戻る</a></p>
-        </main>
-    </div>
+                </section>
+            </div>
+        </div>
+    </main>
 
     <footer>
-        <p>&copy; 2026 杉山健太</p>
+        <div class="wrap"><a href="../index.html#works">ゲーム一覧に戻る</a><span>&copy; 2026 杉山健太</span></div>
     </footer>
 </body>
 
