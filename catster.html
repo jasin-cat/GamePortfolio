@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catster | 杉山健太 ポートフォリオ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="index.html">杉山健太 ポートフォリオ</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html#profile">プロフィール</a></li>
+                    <li><a href="index.html#skills">スキル</a></li>
+                    <li><a href="index.html#works">作品一覧</a></li>
+                    <li><a href="index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <p class="back"><a href="index.html#works">＜ 作品一覧に戻る</a></p>
+
+            <h2>Catster<span class="status">開発中</span></h2>
+            <p>ゲーム進行管理や音声・シーン遷移などを紹介。</p>
+
+            <!-- 目次 -->
+            <ul class="page-menu">
+                <li><a href="#about">作品概要</a></li>
+                <li><a href="#info">開発情報</a></li>
+                <li><a href="#design">設計の工夫と選択理由</a></li>
+                <li><a href="#challenges">苦労した点と解決方法</a></li>
+                <li><a href="#issues">既知の課題と今後の改善予定</a></li>
+                <li><a href="#credits">使用ライブラリ・素材</a></li>
+                <li><a href="catster-code.html">実装コード</a></li>
+            </ul>
+
+            <!-- プレイ動画（まだ無いので仮の表示） -->
+            <div class="no-image">ゲーム映像・画像を準備中</div>
+            <p class="small"><span class="todo">【要記入】プレイ動画 / 作品ページのリンク</span></p>
+
+            <h3 id="about">作品概要</h3>
+            <p>ゲームを最後まで進行できる状態ですが、一部のゲームシステムや機能は未実装です。</p>
+
+            <h4>使用技術</h4>
+            <p>Unity / C# / UniTask / UniRx / LitMotion / Addressables / State Pattern / Singleton / MVP / Input System / ScriptableObject / LINQ / JSON</p>
+
+            <h4>担当内容</h4>
+            <ul>
+                <li>GameSceneの構築・対戦の進行管理</li>
+                <li>カード・ホールド管理と魔法・ダメージ計算</li>
+                <li>ゲームパッド操作、UI・バトル演出の連携</li>
+            </ul>
+
+            <h4>技術解説</h4>
+            <ul>
+                <li>State Patternで対戦の各段階を管理。</li>
+                <li>MVPでデータと表示を分け、UniRxで入力とUIを連携。</li>
+                <li>LINQでカードを集計し、魔法の成立条件を判定。</li>
+                <li>ScriptableObject・JSONでデータを管理し、Addressables・UniTaskで読み込みと演出待ちを制御。</li>
+            </ul>
+
+            <p><a class="code-link" href="catster-code.html">Catsterの実装コードを見る</a></p>
+
+            <h3 id="info">開発情報</h3>
+            <table>
+                <tr>
+                    <th>ジャンル</th>
+                    <td><span class="todo">【要記入】例：対戦型カードゲーム</span></td>
+                </tr>
+                <tr>
+                    <th>開発期間</th>
+                    <td><span class="todo">【要記入】例：〇ヶ月（開発中）</span></td>
+                </tr>
+                <tr>
+                    <th>チーム構成</th>
+                    <td><span class="todo">【要記入】例：プログラマー〇名・デザイナー〇名</span></td>
+                </tr>
+                <tr>
+                    <th>担当役割</th>
+                    <td>GameSceneの構築・対戦の進行管理、カード・ホールド管理と魔法・ダメージ計算、ゲームパッド操作とUI・バトル演出の連携</td>
+                </tr>
+                <tr>
+                    <th>使用言語・エンジン</th>
+                    <td>C# / Unity（<span class="todo">【要記入】Unityのバージョン</span>）</td>
+                </tr>
+                <tr>
+                    <th>開発環境</th>
+                    <td>Visual Studio / Git</td>
+                </tr>
+                <tr>
+                    <th>制作状況</th>
+                    <td>開発中（最後まで進行できるが、一部のゲームシステム・機能は未実装）</td>
+                </tr>
+                <tr>
+                    <th>ソースコード</th>
+                    <td><span class="todo">【要記入】GitHubリポジトリのURL</span></td>
+                </tr>
+            </table>
+
+            <h3 id="design">設計の工夫と選択理由</h3>
+            <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。<span class="todo">【要確認】「比較した方法」の列は、実際に検討した内容に合わせて書き換えてください</span></p>
+            <table class="design-table">
+                <tr>
+                    <th>設計要素</th>
+                    <th>採用した方法</th>
+                    <th>ねらい</th>
+                    <th>比較した方法・避けた理由</th>
+                </tr>
+                <tr>
+                    <td>対戦の進行管理</td>
+                    <td>State Pattern＋UniRxの終了通知</td>
+                    <td>各段階の処理を分離し、終了処理の完了を通知してから次の状態を開始する</td>
+                    <td>1つのメソッド内で順番に処理 → 演出待ちや段階の追加に対応しにくい</td>
+                </tr>
+                <tr>
+                    <td>データと表示</td>
+                    <td>MVP</td>
+                    <td>カードやHPのデータと画面表示を分け、UniRxで入力とUIを連携する</td>
+                    <td>表示クラスにデータ処理を直接書く → 表示変更の影響がロジックに及ぶ</td>
+                </tr>
+                <tr>
+                    <td>魔法の成立判定</td>
+                    <td>LINQで種類別に集計し、データ定義と照合</td>
+                    <td>魔法の種類が増えても、データを追加するだけで判定できる</td>
+                    <td>魔法ごとに条件分岐を書く → 魔法を追加するたびにコード変更が必要</td>
+                </tr>
+                <tr>
+                    <td>アセット読み込み</td>
+                    <td>Addressables＋UniTask</td>
+                    <td>非同期で読み込み、キャンセル時にはアセットを自動で解放する</td>
+                    <td>Resourcesフォルダでの同期読み込み → 読み込み中に処理が止まる</td>
+                </tr>
+            </table>
+
+            <h3 id="challenges">苦労した点と解決方法</h3>
+            <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
+            <h4>課題1：<span class="todo">【要記入】例：演出待ちと状態遷移のタイミング</span></h4>
+            <table>
+                <tr>
+                    <th>現象</th>
+                    <td><span class="todo">【要記入】何が起きたか</span></td>
+                </tr>
+                <tr>
+                    <th>原因</th>
+                    <td><span class="todo">【要記入】調べて分かった原因</span></td>
+                </tr>
+                <tr>
+                    <th>対策</th>
+                    <td><span class="todo">【要記入】どう直し、何が良くなったか</span></td>
+                </tr>
+            </table>
+
+            <h3 id="issues">既知の課題と今後の改善予定</h3>
+            <ul>
+                <li>一部のゲームシステム・機能が未実装：<span class="todo">【要記入】未実装の機能名と、実装予定の内容</span></li>
+                <li><span class="todo">【要記入】現在把握している不具合や制限</span></li>
+                <li><span class="todo">【要記入】次に改善したい点と、その理由</span></li>
+            </ul>
+
+            <h3 id="credits">使用ライブラリ・素材</h3>
+            <h4>Unityライブラリ</h4>
+            <ul>
+                <li><a href="https://github.com/Cysharp/UniTask">UniTask</a>（Cysharp）</li>
+                <li><a href="https://github.com/neuecc/UniRx">UniRx</a>（neuecc）</li>
+                <li><a href="https://github.com/annulusgames/LitMotion">LitMotion</a>（AnnulusGames）</li>
+                <li><a href="https://dotween.demigiant.com/">DOTween</a>（Demigiant）</li>
+                <li><a href="https://github.com/dbrizov/NaughtyAttributes">NaughtyAttributes</a>（dbrizov）</li>
+                <li><a href="https://www.live2d.com/sdk/about/">Live2D Cubism SDK for Unity</a>（Live2D Inc.）</li>
+                <li>Addressables / Input System / TextMesh Pro / Universal Render Pipeline（Unity Technologies）</li>
+            </ul>
+            <h4>サウンド</h4>
+            <ul>
+                <li>Audiostock</li>
+            </ul>
+            <h4>フォント</h4>
+            <ul>
+                <li>しゅわキラダイヤ</li>
+                <li>ふてほど丸ゴシック</li>
+            </ul>
+
+            <p class="back"><a href="index.html#works">＜ 作品一覧に戻る</a></p>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 杉山健太</p>
+    </footer>
+</body>
+
+</html>

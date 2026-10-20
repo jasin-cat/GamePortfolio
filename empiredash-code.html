@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EmpireDash 実装コード | 杉山健太 ポートフォリオ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="index.html">杉山健太 ポートフォリオ</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html#profile">プロフィール</a></li>
+                    <li><a href="index.html#skills">スキル</a></li>
+                    <li><a href="index.html#works">作品一覧</a></li>
+                    <li><a href="index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <p class="back"><a href="empiredash.html">＜ EmpireDash の作品ページに戻る</a></p>
+            <h2>EmpireDash 実装コード</h2>
+            <p>NewKentaフォルダで担当したプレイヤー制御・演出の実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
+            <div>
+                <details class="code-panel">
+                    <summary>実装コードを見る：プレイヤーの状態管理</summary>
+                    <p class="code-description">共通のIStateを通して、現在の状態を終了してから次の状態を開始します。物理更新も現在の状態へ委譲します。</p>
+                    <pre tabindex="0" aria-label="EmpireDashのプレイヤーの状態管理 コード"><code class="language-csharp">// PlayerManger.cs より抜粋（クラス内の一部）
+public void ChangePlayerState(IState nextState)
+{
+    if (nextState == null) return;
+    _currentIState.Exit();
+    _currentIState = nextState;
+    nextState.Enter();
+}
+
+public void FixedUpdate()
+{
+    if (_currentIState != null)
+    {
+        _currentIState.FixedUpdate();
+    }
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：入力と物理更新の分離</summary>
+                    <p class="code-description">Updateでジャンプ入力を受け取り、FixedUpdateでRigidbody2Dの速度を変更します。ポーズ中は入力・移動処理を止めます。</p>
+                    <pre tabindex="0" aria-label="EmpireDashの入力と物理更新の分離 コード"><code class="language-csharp">// Admission.cs より抜粋（クラス内の一部）
+public void Update()
+{//地面に当たったら2段ジャンプのカウントを戻す・ジャンプを可能にする
+    if(!_isThisMovement || PauseController.IsPause) return;
+    if (_player.OnGround)
+    {
+        _count = 1;
+    }
+
+    if (Input.GetKeyDown(KeyCode.Space) &amp;&amp; _count &lt; _maxCount)
+    {
+        _player.SelectAudio.JmupSE();
+        _isMove = true;
+    }
+}
+
+public void FixedUpdate()
+{// ジャンプを行う2段ジャンプのカウントを1増やす
+    if(PauseController.IsPause) return;
+    if (!_isMove) return;
+
+    this._movementRigid.velocity = Vector3.up * _speed;
+    _count++; // インクリメントを前につけないと3段ジャンプが可能になる
+
+    _isMove = false;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：重力反転と状態終了時の復元</summary>
+                    <p class="code-description">入力に応じて重力とキャラクターの向きを切り替えます。状態を抜ける際に重力・縦速度・回転を戻します。</p>
+                    <pre tabindex="0" aria-label="EmpireDashの重力反転と状態終了時の復元 コード"><code class="language-csharp">// SD.cs より抜粋（クラス内の一部）
+public void FixedUpdate()
+{
+    if(PauseController.IsPause) return;  
+    if(_isMove)
+    {
+        _player.SelectAudio.JmupSE();
+        float targetRot;
+        if(_movementRigid.gravityScale == _gravity)
+        {
+            _movementRigid.gravityScale = _reverseGravity;
+            targetRot = 180.0f;
+        }
+        else
+        {
+            _movementRigid.gravityScale = _gravity;
+            targetRot = 0;
+        }
+
+        if(_movementRigid.gravityScale &gt; 0) 
+            _addForceGravity = -Mathf.Abs(_addForceGravity);
+        else
+            _addForceGravity = Mathf.Abs(_addForceGravity);
+
+        _movementRigid.velocity = new Vector2(_movementRigid.velocity.x, _addForceGravity);
+            
+            _player.transform.rotation = Quaternion.Euler(targetRot, 0, 0);
+        _isMove = false;
+    }
+}
+
+public void Exit()
+{
+    if(!_isThisMovement) return;
+    _movementRigid.gravityScale = _gravity;
+    _movementRigid.velocity = new Vector2(_movementRigid.velocity.x, 0);
+    _player.transform.rotation = Quaternion.Euler(0, 0, 0);
+    _isThisMovement = false;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：フェードとシーン切り替えの連携</summary>
+                    <p class="code-description">フェードで画面を覆ってから渡された非同期処理を実行し、完了後に画面を戻します。処理中はUIへの入力を遮断します。</p>
+                    <pre tabindex="0" aria-label="EmpireDashのフェードコード"><code class="language-csharp">// NewKenta/FadeController.cs より抜粋
+public async UniTask Fade(Func&lt;UniTask&gt; uni)
+{
+    image.raycastTarget = true;
+    image.transform.SetAsLastSibling();
+
+    await this.image.DOFade(1, 1f).AsyncWaitForCompletion();
+
+    this.image.transform.SetAsLastSibling();
+
+    if(uni != null) await uni();
+
+    await UniTask.Yield(PlayerLoopTiming.Update);
+
+    await this.image.DOFade(0, 0.25f).AsyncWaitForCompletion();
+
+    this.image.transform.SetAsFirstSibling();
+
+    image.raycastTarget = false;
+}</code></pre>
+                </details>
+            </div>
+
+            <p class="back"><a href="empiredash.html">＜ EmpireDash の作品ページに戻る</a></p>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 杉山健太</p>
+    </footer>
+</body>
+</html>

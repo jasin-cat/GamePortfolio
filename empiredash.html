@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmpireDash | 杉山健太 ポートフォリオ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="index.html">杉山健太 ポートフォリオ</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html#profile">プロフィール</a></li>
+                    <li><a href="index.html#skills">スキル</a></li>
+                    <li><a href="index.html#works">作品一覧</a></li>
+                    <li><a href="index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <p class="back"><a href="index.html#works">＜ 作品一覧に戻る</a></p>
+
+            <h2>EmpireDash<span class="status">完成</span></h2>
+            <p>プレイヤー操作・状態管理と、ゲーム進行・演出を担当。</p>
+
+            <!-- 目次 -->
+            <ul class="page-menu">
+                <li><a href="#about">作品概要</a></li>
+                <li><a href="#info">開発情報</a></li>
+                <li><a href="#design">設計の工夫と選択理由</a></li>
+                <li><a href="#challenges">苦労した点と解決方法</a></li>
+                <li><a href="#issues">既知の課題と今後の改善予定</a></li>
+                <li><a href="#credits">使用ライブラリ・素材</a></li>
+                <li><a href="empiredash-code.html">実装コード</a></li>
+            </ul>
+
+            <!-- プレイ動画 -->
+            <div class="movie">
+                <iframe src="https://www.youtube.com/embed/A-EqcdDDC2U?start=569" title="EmpireDash ゲームプレイ映像"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <p><a href="https://www.njpw.co.jp/games/EmpireDash/" target="_blank" rel="noopener noreferrer">▶ ゲームをプレイする（作品ページ）</a></p>
+
+            <h3 id="about">作品概要</h3>
+            <p>姿を変えながら進むランアクションゲームです。チーム（計7名）で約3ヶ月かけて制作し、私はプレイヤーの操作・状態管理と、ゲーム進行・演出を担当しました。</p>
+
+            <h4>使用技術</h4>
+            <p>Unity / C# / UniTask / UniRx / NaughtyAttributes / DOTween / State Pattern / Rigidbody2D</p>
+
+            <h4>担当内容</h4>
+            <ul>
+                <li>プレイヤーの状態切り替え・入力・物理挙動</li>
+                <li>ゲーム進行・スコア・マップ移動の制御</li>
+                <li>ポーズ、音声・アニメーション・フェード演出</li>
+            </ul>
+
+            <h4>技術解説</h4>
+            <ul>
+                <li>State Patternで操作ごとの処理を分離し、終了時に重力や回転を復元。</li>
+                <li>Updateで入力を受け、FixedUpdateで物理挙動を更新。</li>
+                <li>UniRxで状態変更を通知し、DOTween・UniTaskで演出とフェードを制御。</li>
+            </ul>
+
+            <p><a class="code-link" href="empiredash-code.html">EmpireDashの実装コードを見る</a></p>
+
+            <h3 id="info">開発情報</h3>
+            <table>
+                <tr>
+                    <th>ジャンル</th>
+                    <td><span>姿を変えて進むランアクション</span></td>
+                </tr>
+                <tr>
+                    <th>開発期間</th>
+                    <td>2025年11月〜2026年2月（約3ヶ月）</td>
+                </tr>
+                <tr>
+                    <th>チーム構成</th>
+                    <td><span>プログラマー4名・プランナー2名・デザイナー1名&emsp;&emsp;計7名</span></td>
+                </tr>
+                <tr>
+                    <th>担当役割</th>
+                    <td>プレイヤー操作・状態管理、ゲーム進行・スコア・マップ移動、ポーズ・音声・演出</td>
+                </tr>
+                <tr>
+                    <th>使用言語・エンジン</th>
+                    <td>C# / Unity（2022.3.56.f1）</td>
+                </tr>
+                <tr>
+                    <th>開発環境</th>
+                    <td>Visual Studio Code / GitHub</td>
+                </tr>
+                <tr>
+                    <th>公開先</th>
+                    <td><a href="https://www.njpw.co.jp/games/EmpireDash/" target="_blank" rel="noopener noreferrer">作品ページ（プレイ可能）</a></td>
+                </tr>
+                <tr>
+                    <th>ソースコード</th>
+                    <td><span><a href="empiredash-code.html">実装コードの抜粋（サイト内）</a></span></td>
+                </tr>
+            </table>
+
+            <h3 id="design">設計の工夫と選択理由</h3>
+            <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。</p>
+            <table class="design-table">
+                <tr>
+                    <th>設計要素</th>
+                    <th>採用した方法</th>
+                    <th>ねらい</th>
+                    <th>比較した方法・避けた理由</th>
+                </tr>
+                <tr>
+                    <td>プレイヤー操作の切り替え</td>
+                    <td>State Pattern（共通のIState）</td>
+                    <td>操作ごとの処理をクラスに分離し、状態を抜けるときに重力・回転を元に戻せるようにする</td>
+                    <td>1つのクラス内のif・switch分岐 → 操作を追加するたびに分岐が増え、コードの可読性が損なわれるため</td>
+                </tr>
+                <tr>
+                    <td>入力と物理挙動</td>
+                    <td>Updateで入力、FixedUpdateで速度変更</td>
+                    <td>入力の取りこぼしを防ぎつつ、物理挙動を一定間隔で安定して更新する</td>
+                    <td>Updateで直接速度を変更 → フレームレートによって移動量やジャンプの高さが変わってしまうため</td>
+                </tr>
+                <tr>
+                    <td>状態変更の通知</td>
+                    <td>UniRx</td>
+                    <td>状態の変化を購読側へ通知し、進行管理と演出を疎結合にする</td>
+                    <td>各クラスから直接メソッドを呼ぶ → クラス同士が密結合になり、変更の影響が広がるため</td>
+                </tr>
+                <tr>
+                    <td>フェード・シーン遷移</td>
+                    <td>DOTween、UniTask</td>
+                    <td>フェード完了を待ってから処理を実行し、処理中はUIへの入力を遮断する</td>
+                    <td>コルーチンの入れ子 → 待ち処理の流れが追いにくいため</td>
+                </tr>
+            </table>
+
+            <h3 id="challenges">苦労した点と解決方法</h3>
+            <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
+            <h4>課題1：状態を切り替えても、前の状態の動きが残ってしまう</h4>
+            <table>
+                <tr>
+                    <th>現象</th>
+                    <td>重力反転などの状態から別の状態に切り替えたあとも、重力の向き・縦方向の速度・キャラクターの向きが前の状態のまま残り、意図しない動きになった。</td>
+                </tr>
+                <tr>
+                    <th>原因</th>
+                    <td>各状態が変更したRigidbody2Dの重力・速度や回転を、状態を抜けるときに元に戻す処理がなかった。</td>
+                </tr>
+                <tr>
+                    <th>対策</th>
+                    <td>各状態の Exit() で、変更した重力・縦方向の速度・回転を初期値に戻すようにした。状態の切り替えでは必ず Exit() → Enter() の順に呼ぶため、どの状態から切り替えても同じ初期状態から始まり、状態を追加しても影響が出にくくなった。</td>
+                </tr>
+            </table>
+
+            <h4>課題2：マップと背景の切り替えタイミングがずれる</h4>
+            <table>
+                <tr>
+                    <th>現象</th>
+                    <td>マップは横にスクロールしながら切り替わるのに、背景は一瞬で切り替わるため、マップと背景の見た目がずれていた。</td>
+                </tr>
+                <tr>
+                    <th>原因</th>
+                    <td>マップが切り替わり始めた瞬間に、背景のスプライトをすぐに入れ替えていた。</td>
+                </tr>
+                <tr>
+                    <th>対策</th>
+                    <td>マップの切り替えと同時に背景をクロスフェードさせ、徐々に切り替えることで、ズレを目立ちにくくした。ただし完全には一致していないため、今後の改善点としている。</td>
+                </tr>
+            </table>
+
+            <h3 id="issues">既知の課題と今後の改善予定</h3>
+            <h4>既知の課題</h4>
+            <ul>
+                <li>マップが切り替わってから数秒後にプレイヤーの状態を切り替える仕様のため、マップのスクロール速度が上がると、マップは切り替わったのにプレイヤーの状態が前のままになってしまう。</li>
+            </ul>
+            <h4>次に改善したい点と、その理由</h4>
+            <ul>
+                <li>マップの進むスピードに合わせて、状態を切り替えるまでの待ち時間を調整する。</li>
+            </ul>
+
+            <h3 id="credits">使用ライブラリ・素材</h3>
+            <h4>Unityライブラリ</h4>
+            <ul>
+                <li><a href="https://github.com/cysharp/unitask">UniTask</a></li>
+                <li><a href="https://github.com/neuecc/unirx">UniRx</a></li>
+                <li><a href="https://github.com/demigiant/dotween">DOTween</a></li>
+                <li><a href="https://github.com/dbrizov/NaughtyAttributes">NaughtyAttributes</a></li>
+            </ul>
+            <h4>サウンド</h4>
+            <ul>
+                <li><a href="https://soundeffect-lab.info/" target="_blank" rel="noopener noreferrer">効果音ラボ</a></li>
+                <li><a href="https://maou.audio/" target="_blank" rel="noopener noreferrer">魔王魂</a></li>
+                <li><a href="https://www.youtube.com/watch?v=guZm9jdZHMo" target="_blank" rel="noopener noreferrer">グレート-O-カーン選手 入場テーマ曲「シルクロード」（YouTube）</a></li>
+            </ul>
+            <h4>フォント</h4>
+            <ul>
+                <li><a href="https://ymnk-design.com/aosagi/" target="_blank" rel="noopener noreferrer">あおさぎ</a></li>
+                <li><a href="https://booth.pm/ja/items/4652044" target="_blank" rel="noopener noreferrer">ぎっしりフォント</a>（BOOTH）</li>
+            </ul>
+
+            <p class="back"><a href="index.html#works">＜ 作品一覧に戻る</a></p>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 杉山健太</p>
+    </footer>
+</body>
+
+</html>

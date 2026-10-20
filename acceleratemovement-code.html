@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AccelerateMovement 実装コード | 杉山健太 ポートフォリオ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="index.html">杉山健太 ポートフォリオ</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html#profile">プロフィール</a></li>
+                    <li><a href="index.html#skills">スキル</a></li>
+                    <li><a href="index.html#works">作品一覧</a></li>
+                    <li><a href="index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <p class="back"><a href="acceleratemovement.html">＜ AccelerateMovement の作品ページに戻る</a></p>
+            <h2>AccelerateMovement 実装コード</h2>
+            <p>担当した処理の実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
+            <div>
+                <details class="code-panel">
+                    <summary>実装コードを見る：敵のオブジェクトプール</summary>
+                    <p class="code-description">EnemyPool.csの抜粋。最初にまとめて生成した敵をStackで管理し、足りないときだけ追加で生成します。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementのオブジェクトプール コード"><code class="language-csharp">// EnemyPool.cs より抜粋（クラス内の一部）
+private void SetUp()
+{
+    _Pool = new();
+    PooledEnemy instance = null;
+    for (int i = 0; i &lt; _initCount; i++)
+    {
+        instance = Instantiate(_pooled, this.transform);
+        instance.SetPool(this);
+        instance.gameObject.SetActive(false);
+        _Pool.Push(instance);
+    }
+}
+
+public PooledEnemy GetPooeldEnemy()
+{
+    // プールが空なら新しく生成する
+    if (_Pool.Count &lt;= 0)
+    {
+        var instance = Instantiate(_pooled, this.transform);
+        instance.SetPool(this);
+        instance.gameObject.SetActive(true);
+        return instance;
+    }
+
+    var pooled = _Pool.Pop();
+    pooled.gameObject.SetActive(true);
+    return pooled;
+}
+
+public void ReturnPool(PooledEnemy pooled)
+{
+    pooled.gameObject.SetActive(false);
+    _Pool.Push(pooled);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：ボス戦開始時に敵をまとめて回収</summary>
+                    <p class="code-description">プール側はR3で通知するだけで、各敵が通知を購読して自分でプールに戻ります。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementの敵の回収 コード"><code class="language-csharp">// EnemyPool.cs より抜粋（クラス内の一部）
+protected readonly ReactiveProperty&lt;bool&gt; _onAppearEnemy = new(false);
+public Observable&lt;bool&gt; AppearEnemy =&gt; _onAppearEnemy;
+
+// EnemyManager.cs / Update より抜粋
+if (_countBossStart.BosssStarted)
+{
+    _onAppearEnemy.OnNext(true);
+    return;
+}
+
+// PooledEnemy.cs より抜粋
+void Start()
+{
+    _pool.AppearEnemy
+        .Where(x =&gt; x)
+        .Subscribe(_ =&gt;
+        {
+            Release();
+        }).AddTo(this);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：プレイヤーの速度に合わせた敵の移動</summary>
+                    <p class="code-description">ReactivePropertyでプレイヤーの速度を監視し、値が変わったときだけ敵の速度を更新します。攻撃時は減速させます。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementの敵の移動 コード"><code class="language-csharp">// EnemyMovement.cs より抜粋（クラス内の一部）
+private readonly ReactiveProperty&lt;float&gt; _monitorPlayerSpeed = new();
+
+void OnEnable()
+{
+    _subscription = _monitorPlayerSpeed
+        .DistinctUntilChanged()
+        .Subscribe(s =&gt; _enemySpeed = s);
+    // ...
+}
+
+/// &lt;summary&gt;
+/// 減速させる
+/// &lt;/summary&gt;
+private void BeEnemyAttackSpeed()
+{
+    int max = 100;
+    _enemyAccel = _subAccelPercent / max;
+    _animator.SetTrigger("Attack");
+    _isAttack = true;
+}
+
+void Update()
+{
+    SetEnemySpeed();
+}
+
+void FixedUpdate()
+{
+    _rb.linearVelocityX = _enemySpeed * _enemyAccel;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：敵の行動の流れ</summary>
+                    <p class="code-description">上下に揺れる → 予備動作 → 攻撃 → 一定時間後にプールへ戻る、の流れをLitMotionとUniTaskで順番に実行します。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementの敵の行動 コード"><code class="language-csharp">// EnemyMovement.cs より抜粋（クラス内の一部）
+private async UniTask AnimationAsync(float actionWaitTime, CancellationToken token)
+{
+    // 上下に揺れながら近づく
+    await LMotion.Create(-1f, 1f, actionWaitTime / 4)
+        .WithLoops(4, LoopType.Yoyo)
+        .Bind(v =&gt;
+        {
+            var velocity = _rb.linearVelocity;
+            velocity.y = v;
+            _rb.linearVelocity = velocity;
+        })
+        .ToUniTask(token);
+
+    // 攻撃の予備動作（拡大縮小）
+    await LMotion.Create(1f, 0.5f, actionWaitTime / 10)
+        .WithLoops(2, loopType: LoopType.Yoyo)
+        .Bind(s =&gt;
+        {
+            this.transform.localScale = Vector3.one * s;
+        })
+        .ToUniTask(token);
+    BeEnemyAttackSpeed();
+
+    await UniTask.Delay(
+        TimeSpan.FromSeconds(10f),
+        cancellationToken: token
+    );
+
+    Release();
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：攻撃予告ラインの演出</summary>
+                    <p class="code-description">MaterialPropertyBlockで自作シェーダーの値を変更し、フェードイン後にアウトラインを縮めて攻撃の範囲を予告します。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementの攻撃予告ライン コード"><code class="language-csharp">// AttackMainLine.cs より抜粋（クラス内の一部）
+public async UniTask AnimationAsync(
+        CancellationToken token,
+        float fadeDuration,
+        float outLineDuration
+        )
+{
+    await FadeIn(token, fadeDuration);
+    await OutLineAnimationAsync(token, 0.5f, 0f, outLineDuration);
+}
+
+public async UniTask OutLineAnimationAsync(CancellationToken token, float from, float to, float duration)
+{
+    await LMotion.Create(from, to, duration)
+        .Bind(x =&gt; SetOutLine(x))
+        .ToUniTask(token);
+}
+
+private void SetOutLine(float outLine)
+{
+    if (_materialPropertyBlock is null)
+    {
+        _materialPropertyBlock = new();
+    }
+
+    _sr.GetPropertyBlock(_materialPropertyBlock);
+    _materialPropertyBlock.SetFloat("_OutLineBeginRange", outLine);
+    _sr.SetPropertyBlock(_materialPropertyBlock);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：シーンをまたぐフェード（Singleton）</summary>
+                    <p class="code-description">DontDestroyOnLoadのSingletonにして、どのシーンからでも同じフェードを呼べるようにしています。フェード中はレイキャストで入力を遮断します。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementのフェード コード"><code class="language-csharp">// Singleton.cs より抜粋（クラス内の一部）
+protected virtual void Awake()
+{
+    if(_instance is null)
+    {
+        _instance = this as T;
+        DontDestroyOnLoad(this.gameObject);
+    }
+    else if(_instance != this)
+    {
+        Destroy(this.gameObject);
+    }
+}
+
+// FadeController.cs より抜粋（クラス内の一部）
+public async UniTask FadeIn(float duration, CancellationToken token)
+{
+    if (duration is not 0)
+    {
+        _duraiton = duration;
+    }
+
+    _image.raycastTarget = true;
+
+    await LMotion.Create(0f, 1f, _duraiton)
+        .Bind(x =&gt;
+        {
+            _material.SetFloat("_Alpha", x);
+        }).ToUniTask(token);
+
+    _image.raycastTarget = false;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：ルール画像を使ったフェードシェーダー</summary>
+                    <p class="code-description">FadeShader.shaderの抜粋。ルール画像のアルファ値と進行度を足し合わせ、画像の形に沿って画面が切り替わるようにしています。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementのフェードシェーダー コード"><code class="language-hlsl">// FadeShader.shader より抜粋（フラグメントシェーダー）
+fixed4 frag(v2f IN) : SV_Target
+{
+    fixed4 color = tex2D(_MainTex, IN.texcoord);
+    half ruleAlpha = tex2D(_RuleTex, IN.texcoord).a;
+    // _Alpha（0〜1）を -1〜1 に変換してルール画像に足す
+    half alpha = saturate(ruleAlpha + (_Alpha * 2 - 1));
+    return fixed4(
+        _Color.r,
+        _Color.g,
+        _Color.b,
+        color.a * alpha
+    );
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：ランキングの保存と並び替え</summary>
+                    <p class="code-description">クリアタイムと日時を記録し、タイム順に並び替えて上位20件だけを残します。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementのランキング コード"><code class="language-csharp">// RankingSave.cs より抜粋
+public static void Save(float time)
+{
+    var data = RankingDataToJson.Load();
+
+    data.SetData(time);
+    data.TopTwentyDataSortData();
+    RankingDataToJson.Save(data);
+}
+
+// RankingController.cs / RankingData より抜粋（クラス内の一部）
+public void TopTwentyDataSortData()
+{
+    TopTwentyData.Sort((a,b) =&gt; a.Time.CompareTo(b.Time));
+    while(TopTwentyData.Count &gt; 20)
+    {
+        TopTwentyData.RemoveAt(TopTwentyData.Count - 1);
+    }
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：ランキングの表示</summary>
+                    <p class="code-description">データを順位ごとの表示要素に渡し、今回のプレイ結果には「YOU」のアイコンとハイライトを表示します。</p>
+                    <pre tabindex="0" aria-label="AccelerateMovementのランキング表示 コード"><code class="language-csharp">// RankingView.cs より抜粋（クラス内の一部）
+public void SetRankingElements(RankingData rd)
+{
+    for(int i = 0; i &lt; rd.TopTwentyData.Count; i++)
+    {
+        var element = _topTenRankingElements[i];
+        var data = rd.TopTwentyData[i];
+        bool isLastPerson =
+            rd.LastTimePerson.Time == data.Time
+            &amp;&amp; rd.LastTimePerson.Date == data.Date;
+
+        element.Initialize(
+            data.Time,
+            data.Date,
+            isLastPerson,
+            i + 1);
+    }
+}</code></pre>
+                </details>
+            </div>
+
+            <p class="back"><a href="acceleratemovement.html">＜ AccelerateMovement の作品ページに戻る</a></p>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 杉山健太</p>
+    </footer>
+</body>
+</html>

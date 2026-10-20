@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Catster 実装コード | 杉山健太 ポートフォリオ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="index.html">杉山健太 ポートフォリオ</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html#profile">プロフィール</a></li>
+                    <li><a href="index.html#skills">スキル</a></li>
+                    <li><a href="index.html#works">作品一覧</a></li>
+                    <li><a href="index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <p class="back"><a href="catster.html">＜ Catster の作品ページに戻る</a></p>
+            <h2>Catster 実装コード</h2>
+            <p>担当した処理の実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
+            <div>
+                <details class="code-panel">
+                    <summary>実装コードを見る：状態遷移</summary>
+                    <p class="code-description">StateMachine.csの抜粋。各状態の終了処理からUniRxで通知し、次の状態を開始する仕組みです。</p>
+                    <pre tabindex="0" aria-label="Catsterの状態遷移コード"><code class="language-csharp">// StateMachine.cs より抜粋（クラス内の一部）
+// Init内：終了通知を受け取って次の状態を開始
+// Exitが終わったらEnterを呼ぶ
+_onCompletedExitDisposable = _onCompletedExit
+    .Subscribe(_ =&gt;
+    {
+        _currentState.Enter();
+    });
+
+public void ChangeState(State state)
+{
+    if(_states.TryGetValue(state, out IState currentState))
+    {
+        IState oldState = _currentState;
+        _currentState = currentState;
+        _currentStateType = state;
+
+        oldState.Exit();
+    }
+}
+
+// 各状態の終了処理から呼び出す
+public void OnCompletedExitChangeValue()
+{
+    _onCompletedExit.OnNext(Unit.Default);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：カード選択・ホールド</summary>
+                    <p class="code-description">選択枚数の上限を確認して手札と場を移動し、ホールドしたカードを場に戻します。</p>
+                    <pre tabindex="0" aria-label="Catsterのカード選択・ホールド コード"><code class="language-csharp">// CardListModel.cs より抜粋（クラス内の一部）
+public void HandToPlay(GameObject card, List&lt;CardModel&gt; play, int maxPlay)
+{
+    if(!_cardModelDictionary
+        .TryGetValue(
+            key: card,
+            value: out CardModel model)) return;
+
+    if (_play.Contains(model))
+    {
+        RemovePlay(model);
+        AddHand(model);
+    }
+    else if(play.Count &lt; maxPlay)
+    {
+        RemoveHand(model);
+        AddPlay(model);
+    }
+}
+
+public CardModel HoldToPlay(int maxPlay)
+{
+    if(_play.Count == maxPlay || _hold is null) return null;
+
+    var hold = _hold;
+    AddPlay(_hold);
+    RemoveHold();
+    return hold;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：カード集計・魔法の成立条件</summary>
+                    <p class="code-description">場のカードを種類別に集計し、データに定義した魔法の必要枚数と照合します。集計と条件判定の部分を抜粋しています。</p>
+                    <pre tabindex="0" aria-label="Catsterのカード集計・魔法の成立条件 コード"><code class="language-csharp">// Calculator.cs / GetPlayerStatu より抜粋（クラス内の一部）
+cards = _play
+    .GroupBy(x =&gt; x.CardType)
+    .ToDictionary(
+        g =&gt; g.Key,
+        g =&gt; g.Count()
+    );
+
+var data = SetSpecialData(cards);
+var magicData = await CalculationTools
+    .GetMagicCardList(path: &quot;MagicCards&quot;, token: token);
+
+// 魔法ごとの判定（foreach内より抜粋）
+bool fit = magic.Attack &lt;= data.attackCount
+    &amp;&amp; magic.Defense &lt;= data.defenseCount
+    &amp;&amp; magic.Water &lt;= data.waterCount
+    &amp;&amp; magic.Fire &lt;= data.fireCount
+    &amp;&amp; magic.Leaf &lt;= data.leafCount
+    &amp;&amp; magic.Reinforcement &lt;= data.reinforcementCount
+    &amp;&amp; magic.Time &lt;= data.timeCount;</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：ダメージ・回復計算</summary>
+                    <p class="code-description">回復を反映し、相手の攻撃と自分の防御からダメージを求めてHPを更新します。</p>
+                    <pre tabindex="0" aria-label="Catsterのダメージ・回復計算 コード"><code class="language-csharp">// CalculationButtle.cs より抜粋（クラス内の一部）
+public PlayerModel Calculation(PlayerModel player, PlayerModel other)
+{
+    PlayerModel model = player;
+    _oldHP = player.HP;
+    model.SetOldHP(_oldHP);
+    model.AddHP(model.Recovery);
+
+    _damage = player.Defense - other.Attack;
+
+    if(_damage &gt; 0)
+    {
+        _damage = 0;
+    }
+    else
+    {
+        _damage *= -1;
+    }
+
+    _mitigation = model.Defense;
+
+    model.SetDamage(_damage);
+    _damage *= -1;
+    model.AddHP(_damage);
+    model.SetMitigation(_mitigation);
+    return model;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：ゲームパッド入力</summary>
+                    <p class="code-description">入力元のデバイスを判別し、担当プレイヤーのスティック方向を更新します。</p>
+                    <pre tabindex="0" aria-label="Catsterのゲームパッド入力 コード"><code class="language-csharp">// CursorInputHandler.cs より抜粋（クラス内の一部）
+private void OnMove(InputAction.CallbackContext context)
+{
+    if(_device == context.control.device || _device == null)
+    {
+        _stickDirection.Value = context.ReadValue&lt;Vector2&gt;();
+    }
+}
+
+private void OnStop(InputAction.CallbackContext context)
+{
+    if(_device == context.control.device || _device == null)
+    {
+        _stickDirection.Value = Vector2.zero;
+    }
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：UIの表示切り替え</summary>
+                    <p class="code-description">UniRxで表示状態の変更を購読し、手札・墓地・結果パネルへ反映します。</p>
+                    <pre tabindex="0" aria-label="CatsterのUIの表示切り替え コード"><code class="language-csharp">// UIPresenter.cs より抜粋（クラス内の一部）
+public void ShowPanel()
+{
+    _showHandPanel
+        .Skip(1)
+        .Subscribe(x =&gt;
+        {
+            _view.ShowHandPanel(x);
+        }).AddTo(this);
+
+    _showGraveyardPanel
+        .Skip(1)
+        .Subscribe(x =&gt;
+        {
+            _view.ShowGraveyardPanel(x);
+        }).AddTo(this);
+
+    _showResultPanel
+        .Skip(1)
+        .Subscribe(x =&gt;
+        {
+            _view.ShowResultPanel(x.isShow, isWin: x.isWin);
+        }).AddTo(this);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：アセットの非同期読み込み</summary>
+                    <p class="code-description">AddressablesとUniTaskでアセットを読み込み、キャンセル時の解放も設定しています。</p>
+                    <pre tabindex="0" aria-label="Catsterのアセットの非同期読み込み コード"><code class="language-csharp">// LoadAseet.cs より抜粋（クラス内の一部）
+public static async UniTask&lt;T&gt; GetAsset&lt;T&gt;(string path, CancellationToken token)
+{
+    return await Addressables.LoadAssetAsync&lt;T&gt;(path)
+        .ToUniTask(
+            cancellationToken: token,
+            autoReleaseWhenCanceled: true // これをtrueにするとキャンセル時にAddressable解放処理を行う
+        );
+}</code></pre>
+                </details>
+            </div>
+
+            <p class="back"><a href="catster.html">＜ Catster の作品ページに戻る</a></p>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 杉山健太</p>
+    </footer>
+</body>
+</html>
