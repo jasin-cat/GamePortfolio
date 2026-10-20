@@ -21,7 +21,7 @@
 ### こだわり
   プレイヤーが現在狙っている範囲を円形UIとして表示し、照準状態を表すようにしました。
 <br>
-https://jasin-cat.github.io/GamePortfolio/Archery/index.html
+https://jasin-cat.github.io/GamePortfolio/games/Archery/index.html
 <br>
 <br>
 <br>
@@ -33,7 +33,7 @@ https://jasin-cat.github.io/GamePortfolio/Archery/index.html
 ### 操作方法
   playerをマウスとWキーで操作してspeaceキーでジャンプしてマインスイーパーをクリアする
 <br>
-https://jasin-cat.github.io/GamePortfolio/Minesweeper/index.html
+https://jasin-cat.github.io/GamePortfolio/games/Minesweeper/index.html
 <br>
 <br>
 <br>
@@ -45,4 +45,4 @@ https://jasin-cat.github.io/GamePortfolio/Minesweeper/index.html
 ### 操作方法
   レティクルがなくなるときにレティクルをクリックすると判定する
 <br>
-https://jasin-cat.github.io/GamePortfolio/Minesweeper/index.html
+https://jasin-cat.github.io/GamePortfolio/games/Minesweeper/index.html
