@@ -138,7 +138,7 @@
                 </tr>
                 <tr>
                     <th>開発環境</th>
-                    <td><span class="todo">【要記入】エディタ（Visual Studio Code / Rider など）</span> / GitHub</td>
+                    <td>Visual Studio Code / GitHub</td>
                 </tr>
                 <tr>
                     <th>公開先</th>
@@ -203,7 +203,21 @@
                 <section id="challenges">
                     <h2>苦労した点と解決方法</h2>
                     <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
-                    <p><span class="todo">【要記入】苦労した点（例：ミニマップのクリック位置がずれた、床のアニメーション中にプレイヤーが落ちた など）と、その原因・対策</span></p>
+                    <h3>課題1：ミニマップのクリック位置がずれた</h3>
+            <div class="steps">
+                <div>
+                    <b>現象</b>
+                    <p>ミニマップをクリックしたときにクリックしたところとは違うところにPlayerが生成されてしまう</p>
+                </div>
+                <div>
+                    <b>原因</b>
+                    <p>クリックしたときに取得できる座標が画面座標であるためワールド座標に置き換えていなかったため</p>
+                </div>
+                <div>
+                    <b>対策</b>
+                    <p>RawImage上のクリック位置をローカル座標に直し、画像のサイズで割って0〜1に正規化する。それをミニマップ用カメラの画面座標に変換し、ScreenToWorldPointでワールド座標を求める</p>
+                </div>
+            </div>
                 </section>
                 <section id="issues">
                     <h2>既知の課題と今後の改善予定</h2>
