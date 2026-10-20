@@ -38,12 +38,12 @@
                 <li><a href="#challenges">苦労した点と解決方法</a></li>
                 <li><a href="#issues">既知の課題と今後の改善予定</a></li>
                 <li><a href="#credits">使用ライブラリ・素材</a></li>
+                <li><a href="archery-code.html">実装コード</a></li>
             </ul>
 
             <!-- プレイ動画（まだ無いので仮の表示） -->
             <div class="no-image">ゲーム映像・画像を準備中</div>
             <p><a href="../games/Archery/" target="_blank" rel="noopener noreferrer">▶ ゲームをプレイする（ブラウザ版）</a></p>
-            <p class="small"><span class="todo">【要記入】プレイ動画・スクリーンショット</span></p>
 
             <h3 id="about">作品概要</h3>
             <p>マウス操作で弓を構え、的を狙って矢を放つ3Dアーチェリーゲームです。1人で約1週間かけて制作しました。左クリックを長押しすると弓を構えてカメラがズームし、マウスで照準を調整します。クリックを離すと矢を発射し、的の中心に近いほど高い得点（10〜6点）が入ります。3本命中させるとリザルト画面が表示されます。</p>
@@ -74,6 +74,8 @@
                 <li>自作シェーダーで円の半径を変えられる照準UIを作り、LitMotionで半径・FoV・透明度をアニメーション。UniTaskとCancellationTokenで演出の待ち・中断を制御。</li>
             </ul>
 
+            <p><a class="code-link" href="archery-code.html">Archeryの実装コードを見る</a></p>
+
             <h3 id="info">開発情報</h3>
             <table>
                 <tr>
@@ -82,7 +84,7 @@
                 </tr>
                 <tr>
                     <th>開発期間</th>
-                    <td>約1週間<span class="todo">【要記入】制作した時期（例：2026年〇月）</span></td>
+                    <td>約1週間</td>
                 </tr>
                 <tr>
                     <th>チーム構成</th>
@@ -98,7 +100,7 @@
                 </tr>
                 <tr>
                     <th>開発環境</th>
-                    <td><span class="todo">【要記入】例：Visual Studio Code / GitHub</span></td>
+                    <td>Visual Studio Code / GitHub</td>
                 </tr>
                 <tr>
                     <th>公開先</th>
@@ -111,7 +113,7 @@
             </table>
 
             <h3 id="design">設計の工夫と選択理由</h3>
-            <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。<span class="todo">【要確認】「比較した方法」の列は、実際に検討した内容に合わせて書き換えてください</span></p>
+            <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。</p>
             <table class="design-table">
                 <tr>
                     <th>設計要素</th>
@@ -153,33 +155,34 @@
 
             <h3 id="challenges">苦労した点と解決方法</h3>
             <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
-            <h4>課題1：<span class="todo">【要記入】例：照準の円が画面比率でゆがむ</span></h4>
+            <h4>課題1：照準の円が画面比率でゆがむ</h4>
             <table>
                 <tr>
                     <th>現象</th>
-                    <td><span class="todo">【要記入】何が起きたか</span></td>
+                    <td>WebGLで書き出したときに照準の円が歪んでしまう</td>
                 </tr>
                 <tr>
                     <th>原因</th>
-                    <td><span class="todo">【要記入】調べて分かった原因</span></td>
+                    <td>WebGLの書き出し時の画面比によって照準の円の描画が変わってしまう</td>
                 </tr>
                 <tr>
                     <th>対策</th>
-                    <td><span class="todo">【要記入】どう直し、何が良くなったか（例：シェーダーでUVのx方向に画面のアスペクト比を掛けて真円にした）</span></td>
+                    <td>シェーダーでUVのx方向に画面のアスペクト比を掛けて真円にした</td>
                 </tr>
             </table>
 
             <h3 id="issues">既知の課題と今後の改善予定</h3>
             <h4>既知の課題</h4>
             <ul>
-                <li><span class="todo">【要確認】</span>矢が的に当たらなかった場合、次の矢を構えられる状態に戻らない可能性がある（外れたときに操作を再開する処理がうまく働いていない）。</li>
+                <li>矢が的に当たらなかった場合、次の矢を構えられる状態に戻らない可能性がある（外れたときに操作を再開する処理がうまく働いていない）。</li>
                 <li>的を外した矢は命中数に数えないため、外し続けるとリザルト画面に進まない。</li>
-                <li><span class="todo">【要記入】その他に把握している不具合や制限</span></li>
+                <li>モデルのIKがうまく行ってない</li>
             </ul>
             <h4>次に改善したい点と、その理由</h4>
             <ul>
                 <li>発射数を3本に固定し、外れも含めて結果を表示する。最後まで遊べることを保証するため。</li>
-                <li><span class="todo">【要記入】例：風や距離の変化を加えて、狙う楽しさを増やす</span></li>
+                <li>風や距離の変化を加えて、狙う楽しさを増やす</li>
+                <li>モデルの手でちゃんと矢を持っているようにする</li>
             </ul>
 
             <h3 id="credits">使用ライブラリ・素材</h3>
@@ -193,8 +196,7 @@
             <h4>3Dモデル・アニメーション</h4>
             <ul>
                 <li><a href="https://www.mixamo.com/" target="_blank" rel="noopener noreferrer">Mixamo</a>（キャラクター・アニメーション）</li>
-                <li>Olympic recurve bow（弓のモデル）<span class="todo">【要記入】入手元</span></li>
-                <li>アーチェリーの的のモデル<span class="todo">【要記入】入手元</span></li>
+                <li><a href="https://www.cgtrader.com/free-3d-models/sports/equipment/olympic-recurve-bow">Olympic recurve bow</a>（弓のモデル）</li>
             </ul>
 
             <p class="back"><a href="../index.html#works">＜ 作品一覧に戻る</a></p>

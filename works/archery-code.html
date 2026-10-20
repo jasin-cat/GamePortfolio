@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Archery 実装コード | 杉山健太 ポートフォリオ</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="../index.html">杉山健太 ポートフォリオ</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="../index.html#profile">プロフィール</a></li>
+                    <li><a href="../index.html#skills">スキル</a></li>
+                    <li><a href="../index.html#works">作品一覧</a></li>
+                    <li><a href="../index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <p class="back"><a href="Archery.html">＜ Archery の作品ページに戻る</a></p>
+            <h2>Archery 実装コード</h2>
+            <p>個人制作で実装した入力・照準・矢の物理挙動・得点判定・照準UIの実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
+            <div>
+                <details class="code-panel">
+                    <summary>実装コードを見る：マウス入力の通知</summary>
+                    <p class="code-description">Input SystemのInputActionに左クリックを割り当て、押したときはtrue、離したときはfalseをR3のSubjectで通知します。入力の取得とゲーム側の処理を分けています。</p>
+                    <pre tabindex="0" aria-label="Archeryのマウス入力の通知 コード"><code class="language-csharp">// Input/InputMouseLeftButton.cs より抜粋
+public class InputMouseLeftButton
+{
+    private InputAction _input = new("Click");
+    private Subject&lt;bool&gt; _onClick = new();
+    public Observable&lt;bool&gt; OnClick =&gt; _onClick;
+
+    public InputMouseLeftButton()
+    {
+        _input.AddBinding("&lt;Mouse&gt;/leftButton");
+
+        _input.performed += Click;
+        _input.canceled += Release;
+        _input.Enable();
+    }
+
+    private void Click(InputAction.CallbackContext context)
+    {
+        _onClick.OnNext(value: true);
+    }
+
+    private void Release(InputAction.CallbackContext context)
+    {
+        _onClick.OnNext(value: false);
+    }
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：構えと発射の切り替え</summary>
+                    <p class="code-description">押したときに弓を構え、ズームと照準UIの演出を開始します。離したときはカメラの向きに矢を生成して発射し、実行中の演出をキャンセルしてから、ズームアウトと照準UIのフェードを同時に待ちます。</p>
+                    <pre tabindex="0" aria-label="Archeryの構えと発射の切り替え コード"><code class="language-csharp">// CameraController.cs より抜粋（クラス内の一部）
+_inputMouseLeftButton?.OnClick
+    .Where(v =&gt; v is true)
+    .Subscribe(_ =&gt;
+    {
+        if (!_isPlay) return;
+        _isPlay = false;
+        if (!_clickable) return;
+        _rotBow.SetIsFocus(true);
+        SetReleaseArrowCameraPos();
+        _zoomCamera.ZoomIn(_cts.Token).Forget();
+        _focusTarget.Focus(_cts.Token).Forget();
+    })
+    .AddTo(_inputSubscriptions);
+
+_inputMouseLeftButton?.OnClick
+    .Where(v =&gt; v is false)
+    .Subscribe(async _ =&gt;
+    {
+        if (_isPlay) return;
+        if (!_clickable) return;
+
+        var direction = _camera.transform.forward;
+        var arrow = Instantiate(
+            _arrow,
+            _camera.transform.position,
+            Quaternion.LookRotation(direction)
+        );
+        arrow.InpactForce(direction);
+
+        _clickable = false;
+        _rotBow.SetIsFocus(false);
+        _cts.Cancel();
+        _cts = new();
+
+        List&lt;UniTask&gt; tasks = new()
+        {
+            _zoomCamera.ZoomOut(_cts.Token),
+            _focusTarget.FocusOut(_cts.Token)
+        };
+
+        try
+        {
+            await tasks;
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        SetInitCameraPos();
+        _clickable = true;
+    })
+    .AddTo(_inputSubscriptions);</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：照準操作</summary>
+                    <p class="code-description">構えている間だけマウスの移動量を角度に変換します。角度は上限で制限し、SmoothDampで滑らかに追従させることで、照準が急に跳ねないようにしています。</p>
+                    <pre tabindex="0" aria-label="Archeryの照準操作 コード"><code class="language-csharp">// RotationBow.cs より抜粋（クラス内の一部）
+void Update()
+{
+    if (!_isFocus) return;
+
+    var delta = _inputMouseDelta.ReadMouseDelta();
+
+    _targety += delta.x * _sensitivity;
+    _targetx -= delta.y * _sensitivity;
+
+    _targetx = Mathf.Clamp(_targetx, -_maxRot, _maxRot);
+    _targety = Mathf.Clamp(_targety, -_maxRot, _maxRot);
+
+    _rotx = Mathf.SmoothDamp(_rotx, _targetx, ref _rotVelocityx, _smoothTime);
+    _roty = Mathf.SmoothDamp(_roty, _targety, ref _rotVelocityy, _smoothTime);
+
+    this.transform.localRotation = Quaternion.Euler(
+        _rotx,
+        _roty,
+        this.transform.localRotation.z
+    );
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：矢の発射と停止</summary>
+                    <p class="code-description">発射時はRigidbodyに初速を与え、重力を含んだ軌道は物理演算に任せます。的に刺さったらKinematicにして、その場で止めます。</p>
+                    <pre tabindex="0" aria-label="Archeryの矢の発射と停止 コード"><code class="language-csharp">// Arrow.cs より抜粋（クラス内の一部）
+public void ZeroSpeed()
+{
+    _rb.isKinematic = true;
+    _speed = 0f;
+}
+
+public void InpactForce(Vector3 direction)
+{
+    _rb.isKinematic = false;
+    _rb.linearVelocity = direction.normalized * _speed;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：命中判定と得点計算</summary>
+                    <p class="code-description">矢が当たったら的の子オブジェクトにして刺さった状態にし、的の中心からの距離で10〜6点を判定します。命中数はReactivePropertyで監視し、3本目でリザルト画面を表示します。</p>
+                    <pre tabindex="0" aria-label="Archeryの命中判定と得点計算 コード"><code class="language-csharp">// Target.cs より抜粋（クラス内の一部）
+void Start()
+{
+    _cts = new();
+    _strikeCount
+        .Where(count =&gt; count == 3)
+        .Subscribe(async _ =&gt;
+        {
+            await UniTask.Yield();
+            _endPanel.Display(_cts.Token, _point).Forget();
+        }).AddTo(this);
+}
+
+void OnCollisionEnter(Collision collision)
+{
+    if (!collision.gameObject
+        .TryGetComponent(out Arrow component)) return;
+
+    _strikeCount.Value++;
+
+    component.ZeroSpeed();
+    component.transform.SetParent(this.transform);
+    _currentArrowDistance = Vector3.Distance(
+        this.transform.position,
+        component.transform.position);
+
+    GetPoint();
+    _onArrowHitTarget.OnNext(true);
+}
+
+private void GetPoint()
+{
+    if (_currentArrowDistance &lt;= _tepPointDistance)
+    {
+        _point += 10;
+    }
+    else if (_currentArrowDistance &lt;= _ninePointDistance)
+    {
+        _point += 9;
+    }
+    else if (_currentArrowDistance &lt;= _eightPointDistance)
+    {
+        _point += 8;
+    }
+    else if (_currentArrowDistance &lt;= _sevenPointDistance)
+    {
+        _point += 7;
+    }
+    else if (_currentArrowDistance &lt;= _sixPointDistance)
+    {
+        _point += 6;
+    }
+
+    _pointTMPro.text = $"{_point} POINT";
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：照準UIのシェーダー</summary>
+                    <p class="code-description">画面中央からの距離で、円の内側・縁・外側を塗り分けます。UVのx方向に画面のアスペクト比を掛けることで、WebGLの画面比率でも円がゆがまないようにしています。</p>
+                    <pre tabindex="0" aria-label="Archeryの照準UIのシェーダー コード"><code class="language-hlsl">// Shader/RadiusShader.shader より抜粋（フラグメントシェーダー）
+half4 frag(Varyings IN) : SV_Target
+{
+    float2 uv = IN.uv;
+    uv -= float2(0.5, 0.5);
+    float aspect = _ImageSize.x / _ImageSize.y;
+    uv.x *= aspect;
+    float distanceFromCenter = length(uv);
+
+    if (distanceFromCenter &lt; _Radius)
+    {
+        return _CenterColor;
+    }
+
+    float outLine = 1.0 - smoothstep(
+        _Radius,
+        _Radius + _OutLineWidth,
+        distanceFromCenter
+    );
+
+    if (outLine &gt; 0.3)
+    {
+        return _OutLineColor * outLine * _OutLineIntensity;
+    }
+
+    return _Color;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：照準UIの演出</summary>
+                    <p class="code-description">構えるとLitMotionでシェーダーの半径を絞り、狙っている範囲が狭まっていく様子を表現します。発射後は半径を戻しながら色と縁をフェードさせ、待ち終わったら非表示にします。</p>
+                    <pre tabindex="0" aria-label="Archeryの照準UIの演出 コード"><code class="language-csharp">// FocusTarget.cs より抜粋（クラス内の一部）
+public async UniTask Focus(CancellationToken token)
+{
+    SetMaterialAlfa("_Color", _outColorAlfa);
+    SetMaterialAlfa("_OutLineColor", _outLineColorAlta);
+    _image.enabled = true;
+    await LMotion.Create(_initRaidus, _maxRadius, _focusDuration)
+    .Bind(r =&gt; _focusMaterial.SetFloat("_Radius", r))
+    .ToUniTask(cancellationToken: token);
+}
+
+public async UniTask FocusOut(CancellationToken token)
+{
+    float currentRadius = _focusMaterial.GetFloat("_Radius");
+
+    LMotion.Create(currentRadius, _initRaidus, _focusDuration / 2f)
+        .Bind(r =&gt; _focusMaterial.SetFloat("_Radius", r))
+        .ToUniTask(cancellationToken: token).Forget();
+
+    List&lt;UniTask&gt; tasks = new();
+    tasks.Add
+    (
+        UniTask.Delay(
+        delayTimeSpan: TimeSpan.FromSeconds(_focusDuration / 2.5f),
+        ignoreTimeScale: false,
+        delayTiming: PlayerLoopTiming.Update,
+        cancellationToken: token)
+    );
+
+    Fade("_Color", _focusDuration / 3f, token).Forget();
+    tasks.Add
+    (
+        Fade("_OutLineColor", _focusDuration / 4f, token)
+    );
+
+    await tasks;
+    if (_image is null) return;
+    _image.enabled = false;
+}</code></pre>
+                </details>
+            </div>
+
+            <p class="back"><a href="Archery.html">＜ Archery の作品ページに戻る</a></p>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 杉山健太</p>
+    </footer>
+</body>
+</html>
