@@ -45,4 +45,4 @@ https://jasin-cat.github.io/GamePortfolio/games/Minesweeper/index.html
 ### 操作方法
   レティクルがなくなるときにレティクルをクリックすると判定する
 <br>
-https://jasin-cat.github.io/GamePortfolio/games/Minesweeper/index.html
+https://jasin-cat.github.io/GamePortfolio/games/PlayingCatch/index.html
