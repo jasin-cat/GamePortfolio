@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archery | 杉山健太 ポートフォリオ</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="../index.html">杉山健太 ポートフォリオ</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="../index.html#profile">プロフィール</a></li>
+                    <li><a href="../index.html#skills">スキル</a></li>
+                    <li><a href="../index.html#works">作品一覧</a></li>
+                    <li><a href="../index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <p class="back"><a href="../index.html#works">＜ 作品一覧に戻る</a></p>
+
+            <h2>Archery<span class="status">完成</span></h2>
+            <p>弓の照準操作・矢の物理挙動・得点判定と、照準UIのシェーダーを個人で制作。</p>
+
+            <!-- 目次 -->
+            <ul class="page-menu">
+                <li><a href="#about">作品概要</a></li>
+                <li><a href="#info">開発情報</a></li>
+                <li><a href="#design">設計の工夫と選択理由</a></li>
+                <li><a href="#challenges">苦労した点と解決方法</a></li>
+                <li><a href="#issues">既知の課題と今後の改善予定</a></li>
+                <li><a href="#credits">使用ライブラリ・素材</a></li>
+            </ul>
+
+            <!-- プレイ動画（まだ無いので仮の表示） -->
+            <div class="no-image">ゲーム映像・画像を準備中</div>
+            <p><a href="../games/Archery/" target="_blank" rel="noopener noreferrer">▶ ゲームをプレイする（ブラウザ版）</a></p>
+            <p class="small"><span class="todo">【要記入】プレイ動画・スクリーンショット</span></p>
+
+            <h3 id="about">作品概要</h3>
+            <p>マウス操作で弓を構え、的を狙って矢を放つ3Dアーチェリーゲームです。1人で約1週間かけて制作しました。左クリックを長押しすると弓を構えてカメラがズームし、マウスで照準を調整します。クリックを離すと矢を発射し、的の中心に近いほど高い得点（10〜6点）が入ります。3本命中させるとリザルト画面が表示されます。</p>
+
+            <h4>操作方法</h4>
+            <ul>
+                <li>マウス移動：照準の調整</li>
+                <li>左クリック長押し：弓を構える（ズーム・照準UI表示）</li>
+                <li>左クリックを離す：矢を発射</li>
+            </ul>
+
+            <h4>使用技術</h4>
+            <p>Unity / C# / UniTask / R3 / LitMotion / Input System / Rigidbody / Animator IK / シェーダー（HLSL・URP） / TextMesh Pro</p>
+
+            <h4>担当内容（個人制作のため全体）</h4>
+            <ul>
+                <li>マウス入力による弓の照準操作と、構え・発射時のカメラ制御</li>
+                <li>Rigidbodyを使った矢の発射と、的への命中・得点判定</li>
+                <li>照準範囲を円で表示するUIシェーダーと、ズーム・フェード演出</li>
+                <li>Animator IKでキャラクターの両手を弓に合わせる処理</li>
+            </ul>
+
+            <h4>技術解説</h4>
+            <ul>
+                <li>Input Systemの入力をR3のSubjectで通知し、「押した」「離した」を購読して構え・発射を切り替え。</li>
+                <li>矢はカメラの向きに初速を与え、Rigidbodyの物理演算で重力を含んだ軌道を再現。</li>
+                <li>的の中心から矢までの距離で得点を5段階に判定し、R3のReactivePropertyで命中数を監視してリザルトを表示。</li>
+                <li>自作シェーダーで円の半径を変えられる照準UIを作り、LitMotionで半径・FoV・透明度をアニメーション。UniTaskとCancellationTokenで演出の待ち・中断を制御。</li>
+            </ul>
+
+            <h3 id="info">開発情報</h3>
+            <table>
+                <tr>
+                    <th>ジャンル</th>
+                    <td>3Dアーチェリー（的当て）</td>
+                </tr>
+                <tr>
+                    <th>開発期間</th>
+                    <td>約1週間<span class="todo">【要記入】制作した時期（例：2026年〇月）</span></td>
+                </tr>
+                <tr>
+                    <th>チーム構成</th>
+                    <td>個人制作</td>
+                </tr>
+                <tr>
+                    <th>担当役割</th>
+                    <td>企画・プログラム全般（照準操作、カメラ、矢の物理挙動、得点判定、UI・シェーダー、演出）</td>
+                </tr>
+                <tr>
+                    <th>使用言語・エンジン</th>
+                    <td>C# / HLSL / Unity（6000.3.8f1）・Universal Render Pipeline</td>
+                </tr>
+                <tr>
+                    <th>開発環境</th>
+                    <td><span class="todo">【要記入】例：Visual Studio Code / GitHub</span></td>
+                </tr>
+                <tr>
+                    <th>公開先</th>
+                    <td><a href="../games/Archery/" target="_blank" rel="noopener noreferrer">ブラウザ版（WebGL・プレイ可能）</a></td>
+                </tr>
+                <tr>
+                    <th>ソースコード</th>
+                    <td><span class="todo">【要記入】GitHubリポジトリのURL</span></td>
+                </tr>
+            </table>
+
+            <h3 id="design">設計の工夫と選択理由</h3>
+            <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。<span class="todo">【要確認】「比較した方法」の列は、実際に検討した内容に合わせて書き換えてください</span></p>
+            <table class="design-table">
+                <tr>
+                    <th>設計要素</th>
+                    <th>採用した方法</th>
+                    <th>ねらい</th>
+                    <th>比較した方法・避けた理由</th>
+                </tr>
+                <tr>
+                    <td>入力の受け取り</td>
+                    <td>Input SystemのInputActionをクラスに包み、R3のSubjectで通知</td>
+                    <td>「押した」「離した」を購読するだけで処理を書け、入力の取得とゲーム側の処理を分けられる</td>
+                    <td>UpdateでInput.GetMouseButtonを毎フレーム確認 → 入力処理とカメラ・演出の処理が1か所に混ざるため</td>
+                </tr>
+                <tr>
+                    <td>矢の軌道</td>
+                    <td>Rigidbodyに初速を与え、物理演算に任せる</td>
+                    <td>重力による落下を含んだ自然な放物線になり、狙いの難しさが生まれる</td>
+                    <td>Transformで直線移動 → 重力が表現できず、遠くの的でも狙いがぶれないため</td>
+                </tr>
+                <tr>
+                    <td>得点判定</td>
+                    <td>的の中心から矢までの距離で段階判定</td>
+                    <td>しきい値をインスペクターから調整でき、的の大きさが変わっても対応しやすい</td>
+                    <td>得点ごとに当たり判定のコライダーを重ねる → オブジェクトが増え、調整が手間になるため</td>
+                </tr>
+                <tr>
+                    <td>照準UI</td>
+                    <td>自作シェーダーの _Radius をLitMotionで変化</td>
+                    <td>構えている間に円が絞られ、狙っている範囲を視覚的に伝えられる</td>
+                    <td>円の画像を拡大縮小 → 縁の太さまで変わり、画面比率で円がゆがむため</td>
+                </tr>
+                <tr>
+                    <td>演出の待ちと中断</td>
+                    <td>UniTask＋CancellationToken</td>
+                    <td>ズームアウトと照準UIのフェードを同時に待ち、途中で発射したときは演出を中断できる</td>
+                    <td>コルーチン → 複数の演出を並行して待つ処理や中断が書きにくいため</td>
+                </tr>
+            </table>
+
+            <h3 id="challenges">苦労した点と解決方法</h3>
+            <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
+            <h4>課題1：<span class="todo">【要記入】例：照準の円が画面比率でゆがむ</span></h4>
+            <table>
+                <tr>
+                    <th>現象</th>
+                    <td><span class="todo">【要記入】何が起きたか</span></td>
+                </tr>
+                <tr>
+                    <th>原因</th>
+                    <td><span class="todo">【要記入】調べて分かった原因</span></td>
+                </tr>
+                <tr>
+                    <th>対策</th>
+                    <td><span class="todo">【要記入】どう直し、何が良くなったか（例：シェーダーでUVのx方向に画面のアスペクト比を掛けて真円にした）</span></td>
+                </tr>
+            </table>
+
+            <h3 id="issues">既知の課題と今後の改善予定</h3>
+            <h4>既知の課題</h4>
+            <ul>
+                <li><span class="todo">【要確認】</span>矢が的に当たらなかった場合、次の矢を構えられる状態に戻らない可能性がある（外れたときに操作を再開する処理がうまく働いていない）。</li>
+                <li>的を外した矢は命中数に数えないため、外し続けるとリザルト画面に進まない。</li>
+                <li><span class="todo">【要記入】その他に把握している不具合や制限</span></li>
+            </ul>
+            <h4>次に改善したい点と、その理由</h4>
+            <ul>
+                <li>発射数を3本に固定し、外れも含めて結果を表示する。最後まで遊べることを保証するため。</li>
+                <li><span class="todo">【要記入】例：風や距離の変化を加えて、狙う楽しさを増やす</span></li>
+            </ul>
+
+            <h3 id="credits">使用ライブラリ・素材</h3>
+            <h4>Unityライブラリ</h4>
+            <ul>
+                <li><a href="https://github.com/Cysharp/UniTask">UniTask</a>（Cysharp）</li>
+                <li><a href="https://github.com/Cysharp/R3">R3</a>（Cysharp）</li>
+                <li><a href="https://github.com/annulusgames/LitMotion">LitMotion</a>（AnnulusGames）</li>
+                <li>Input System / TextMesh Pro / Universal Render Pipeline（Unity Technologies）</li>
+            </ul>
+            <h4>3Dモデル・アニメーション</h4>
+            <ul>
+                <li><a href="https://www.mixamo.com/" target="_blank" rel="noopener noreferrer">Mixamo</a>（キャラクター・アニメーション）</li>
+                <li>Olympic recurve bow（弓のモデル）<span class="todo">【要記入】入手元</span></li>
+                <li>アーチェリーの的のモデル<span class="todo">【要記入】入手元</span></li>
+            </ul>
+
+            <p class="back"><a href="../index.html#works">＜ 作品一覧に戻る</a></p>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 杉山健太</p>
+    </footer>
+</body>
+
+</html>
