@@ -447,7 +447,7 @@ figcaption {
 .pull {
     margin: 0 0 40px;
     padding-left: 20px;
-    border-left: 4px solid var(--accent);
+    border-left: 4px solid var(--fg);
     font-size: clamp(20px, 2.4vw, 28px);
     font-weight: 700;
     line-height: 1.6;
