@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayingCatch | 杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="../index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="サイト内">
+                <ul>
+                    <li><a href="../index.html#profile">プロフィール</a></li>
+                    <li><a href="../index.html#skills">スキル</a></li>
+                    <li><a href="../index.html#pr">自己PR</a></li>
+                    <li><a href="../index.html#works">ゲーム一覧</a></li>
+                    <li><a href="../index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <p class="crumb"><a href="../index.html#works">ゲーム一覧</a> ／ PlayingCatch</p>
+
+        <div class="grid">
+            <h1 class="work-title">PlayingCatch</h1>
+            <p class="work-lead">ピッチャーが投げるボールを、リングが縮むタイミングに合わせてクリックで捕るキャッチボールゲーム。R3とUniTask、LitMotion、自作シェーダーで制作。</p>
+        </div>
+
+        <dl class="spec-strip">
+            <div>
+                <dt>ジャンル</dt>
+                <dd>3Dタイミングゲーム（キャッチボール）</dd>
+            </div>
+            <div>
+                <dt>開発期間</dt>
+                <dd>1周間</dd>
+            </div>
+            <div>
+                <dt>チーム構成</dt>
+                <dd>個人制作</dd>
+            </div>
+            <div>
+                <dt>使用言語・エンジン</dt>
+                <dd>C# / Unity（6000.3.8f1）</dd>
+            </div>
+        </dl>
+
+        <div class="media">
+            <div class="no-image">画像準備中</div>
+        </div>
+        <div class="actions">
+            <a class="button" href="../games/PlayingCatch/" target="_blank" rel="noopener noreferrer">ゲームをプレイする（ブラウザ版）</a>
+            <a class="button line" href="playingcatch-code.html">実装コードを見る</a>
+        </div>
+
+        <div class="grid">
+            <aside class="aside">
+                <div class="sticky">
+                    <p>このページの内容</p>
+                    <ol class="page-toc">
+                        <li><a href="#about">作品概要</a></li>
+                        <li><a href="#info">開発情報</a></li>
+                        <li><a href="#design">設計の工夫と選択理由</a></li>
+                        <li><a href="#challenges">苦労した点と解決方法</a></li>
+                        <li><a href="#issues">既知の課題と今後の改善予定</a></li>
+                        <li><a href="#credits">使用ライブラリ</a></li>
+                    </ol>
+                </div>
+            </aside>
+
+            <div class="article">
+                <section id="about">
+                    <h2>作品概要</h2>
+                    <p>ピッチャーが投げるボールを、ストライクゾーンで捕るキャッチボールゲームです。
+                        「Ready... Go」の合図のあと、ピッチャーがストライクゾーン内のランダムな位置へボールを投げます。
+                        投げるたびに、ボールが届く位置に円いリングが表示され、届くまでの時間に合わせて小さくなっていきます。
+                        リングが閉じる瞬間に、ボールが届く位置をクリックするとキャッチです。
+                        タイミングと位置のずれが小さいほど Perfect・Great・Good と高い評価になり、得点が画面に浮かび上がります。
+                        10球投げ終わると合計点が表示され、リトライボタンで最初から遊べます。</p>
+
+            <h3>操作方法</h3>
+            <ul>
+                <li>マウスクリック：ボールが届く位置をクリックしてキャッチ</li>
+            </ul>
+
+            <h3>使用技術</h3>
+            <p>Unity / C# / R3 / UniTask / LitMotion / Input System / Rigidbody / HLSLシェーダー（URP） / TextMesh Pro / NaughtyAttributes</p>
+
+            <h3>担当内容</h3>
+            <p>個人制作のため全体</p>
+
+            <h3>技術解説</h3>
+            <ul>
+                <li>ボールは、到達時間 t と目標までの距離から、水平方向は「距離 ÷ t」、上下方向は重力の分を足した初速を求めて Rigidbody に与える。
+                    これで投げるたびに速さが変わっても、必ずストライクゾーンの狙った位置に届く。</li>
+                <li>判定は、ボールがストライクゾーンに入った時刻とクリックした時刻の差、
+                    目標位置とクリック位置の距離をそれぞれ0〜1に正規化し、その平均で Perfect・Great・Good・Miss を決める。</li>
+                <li>リングはUIのImageに自作シェーダーを使い、半径を1から0へ小さくしていく。
+                    目標のワールド座標を毎フレーム WorldToScreenPoint で画面座標に変換して、リングの位置を合わせる。</li>
+                <li>投球・判定の完了・得点の変化はR3のSubjectとReactivePropertyで通知し、
+                    GameFlowControllerが購読して投球・キャッチ・得点・UIをつなぐ。</li>
+                <li>Ready・Go の文字送りや得点の浮かび上がりは、UniTask と LitMotion で待ち時間とアニメーションを順番に書いている。</li>
+            </ul>
+
+            <p><a class="button line" href="playingcatch-code.html">PlayingCatchの実装コードを見る</a></p>
+                </section>
+                <section id="info">
+                    <h2>開発情報</h2>
+                    <table class="facts">
+                <tr>
+                    <th>ジャンル</th>
+                    <td>3Dタイミングゲーム（キャッチボール）</td>
+                </tr>
+                <tr>
+                    <th>開発期間</th>
+                    <td>1周間</td>
+                </tr>
+                <tr>
+                    <th>チーム構成</th>
+                    <td>個人制作</td>
+                </tr>
+                <tr>
+                    <th>担当役割</th>
+                    <td>企画・プログラム全般</td>
+                </tr>
+                <tr>
+                    <th>使用言語・エンジン</th>
+                    <td>C# / Unity（6000.3.8f1）</td>
+                </tr>
+                <tr>
+                    <th>開発環境</th>
+                    <td>Visual Studio Code / GitHub</td>
+                </tr>
+                <tr>
+                    <th>公開先</th>
+                    <td><a href="../games/PlayingCatch/" target="_blank" rel="noopener noreferrer">ブラウザ版（WebGL・プレイ可能）</a></td>
+                </tr>
+                <tr>
+                    <th>ソースコード</th>
+                    <td><a href="playingcatch-code.html">実装コードの抜粋（サイト内）</a></td>
+                </tr>
+            </table>
+                </section>
+                <section id="design">
+                    <h2>設計の工夫と選択理由</h2>
+                    <p>「何を選んだか」と「なぜ選んだか」、比較した方法をまとめています。</p>
+            <div class="table-wrap"><table class="data-table">
+<thead><tr>
+                    <th>設計要素</th>
+                    <th>採用した方法</th>
+                    <th>ねらい</th>
+                    <th>比較した方法・避けた理由</th>
+                </tr></thead>
+<tbody>
+                <tr>
+                    <td>ボールの投げ方</td>
+                    <td>到達時間から初速を逆算し、Rigidbodyに速度を与える</td>
+                    <td>速さを変えても必ず狙った位置に届き、届く時刻も前もって分かる</td>
+                    <td>AddForceで毎回同じ力を加える → 届く位置と時間が決まらず、リングの表示と合わせられないため</td>
+                </tr>
+                <tr>
+                    <td>キャッチの判定</td>
+                    <td>時間のずれと位置のずれを0〜1に正規化して平均する</td>
+                    <td>「早すぎる・遅すぎる」と「場所がずれている」の両方を1つの評価にまとめられる</td>
+                    <td>時間だけで判定する → どこをクリックしても捕れてしまい、位置を狙う意味がなくなるため</td>
+                </tr>
+                <tr>
+                    <td>タイミングの見せ方</td>
+                    <td>到達時間に合わせて縮むリングを、シェーダーで描く</td>
+                    <td>どこに・いつ届くかが一目で分かり、半径を変える値1つで描き直せる</td>
+                    <td>リングの画像を拡大縮小する → 線の太さまで一緒に変わってしまうため</td>
+                </tr>
+                <tr>
+                    <td>機能どうしの連携</td>
+                    <td>R3のSubjectで通知し、GameFlowControllerで購読してつなぐ</td>
+                    <td>投球・キャッチ・得点・UIがお互いを直接知らなくてよい</td>
+                    <td>直接メソッドを呼び合う → クラス同士の依存が増えるため</td>
+                </tr>
+                <tr>
+                    <td>入力の受け取り</td>
+                    <td>Input SystemのInputActionをコードで作るクラス（CatchInput）にまとめる</td>
+                    <td>クリック位置をレイキャストで3D座標に直す処理を、判定のクラスから切り離せる</td>
+                    <td>判定クラスの Update で毎フレーム入力を調べる → 判定と入力の処理が混ざるため</td>
+                </tr>
+            </tbody>
+</table></div>
+                </section>
+                <section id="challenges">
+                    <h2>苦労した点と解決方法</h2>
+                    <p>「現象 → 原因 → 対策」の順で、開発中に直面した課題をまとめています。</p>
+                    <h3>課題1：<span class="todo">[要記入]</span></h3>
+            <div class="steps">
+                <div>
+                    <b>現象</b>
+                    <p><span class="todo">【要記入】</span></p>
+                </div>
+                <div>
+                    <b>原因</b>
+                    <p><span class="todo">【要記入】</span></p>
+                </div>
+                <div>
+                    <b>対策</b>
+                    <p><span class="todo">【要記入】</span></p>
+                </div>
+            </div>
+                </section>
+                <section id="issues">
+                    <h2>既知の課題と今後の改善予定</h2>
+                    <h3>既知の課題</h3>
+            <ul>
+                <li>球速の種類で、速い球（Fast）のときに到達時間を足し、遅い球（Slow）のときに引いているため、名前と実際の速さが逆になっている。</li>
+                <li>クリックしないとボールがストライクゾーンを通り過ぎても判定が終わらず、次の球が投げられない。</li>
+                <li>クリックした位置にコライダーがないとレイキャストが当たらず、クリックが無視される。</li>
+                <li>投げる球数（10球）が変数ではなく、判定の式に直接書かれている。</li>
+            </ul>
+            <h3>次に改善したい点と、その理由</h3>
+            <ul>
+                <li>球速の足し引きを直し、速い球・遅い球の差が分かるよう見た目でも区別する。駆け引きのあるゲームにするため。</li>
+                <li>ボールが通り過ぎてから一定時間クリックがなければ Miss にする。操作しなくてもゲームが止まらないようにするため。</li>
+                <li>ストライクゾーンと同じ面にクリック用の平面を置き、どこをクリックしても位置を取れるようにする。</li>
+            </ul>
+                </section>
+                <section id="credits">
+                    <h2>使用ライブラリ</h2>
+                    <h3>Unityライブラリ</h3>
+            <ul>
+                <li><a href="https://github.com/Cysharp/R3">R3</a>（Cysharp）</li>
+                <li><a href="https://github.com/Cysharp/UniTask">UniTask</a>（Cysharp）</li>
+                <li><a href="https://github.com/annulusgames/LitMotion">LitMotion</a>（AnnulusGames）</li>
+                <li><a href="https://github.com/dbrizov/NaughtyAttributes">NaughtyAttributes</a>（dbrizov）</li>
+                <li><a href="https://github.com/GlitchEnzo/NuGetForUnity">NuGetForUnity</a>（GlitchEnzo）</li>
+                <li>Input System / TextMesh Pro / Universal Render Pipeline（Unity Technologies）</li>
+            </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="wrap"><a href="../index.html#works">ゲーム一覧に戻る</a><span>&copy; 2026 杉山健太</span></div>
+    </footer>
+</body>
+
+</html>

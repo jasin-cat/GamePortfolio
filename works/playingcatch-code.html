@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PlayingCatch 実装コード | 杉山健太 ポートフォリオ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="masthead">
+        <div class="wrap">
+            <p class="name"><a href="../index.html">杉山健太<span>Portfolio 2026</span></a></p>
+            <nav aria-label="サイト内">
+                <ul>
+                    <li><a href="../index.html#profile">プロフィール</a></li>
+                    <li><a href="../index.html#skills">スキル</a></li>
+                    <li><a href="../index.html#pr">自己PR</a></li>
+                    <li><a href="../index.html#works">ゲーム一覧</a></li>
+                    <li><a href="../index.html#contact">連絡先</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <p class="crumb"><a href="../index.html#works">ゲーム一覧</a> ／ <a href="playingcatch.html">PlayingCatch</a> ／ 実装コード</p>
+        <h1 class="page-title">PlayingCatch 実装コード</h1>
+        <div class="code-body">
+<p>ボールを狙った位置に投げる処理、キャッチの判定、縮むリングのシェーダー、ゲーム進行の実装例です。各項目を開くと、スクリプトの抜粋を確認できます。</p>
+            <div>
+                <details class="code-panel">
+                    <summary>実装コードを見る：到達時間から初速を逆算して投げる</summary>
+                    <p class="code-description">目標までの距離を到達時間 t で割って水平方向の速さを求め、上下方向は重力で落ちる分を足して初速を決めます。こうすると、t を変えて球速を変えても、ボールは必ず t 秒後に目標の位置に届きます。</p>
+                    <pre tabindex="0" aria-label="PlayingCatchの到達時間から初速を逆算して投げる コード"><code class="language-csharp">// Pitcher/BallLancher.cs より抜粋（クラス内の一部）
+public Ball Release(Vector3 target, float flightTime)
+{
+    Vector3 start = this.transform.position;
+
+    Ball ball = Instantiate(
+        _ballPrefab,
+        start,
+        Quaternion.identity);
+    ball.SetRigidbody();
+
+    Vector3 displacement = target - start;
+    Vector3 horizontal = new Vector3(displacement.x, 0f, displacement.z);
+
+    float t = flightTime;
+    float vx = horizontal.x / t;
+    float vz = horizontal.z / t;
+    float vy = (displacement.y - 0.5f * Physics.gravity.y * t * t) / t;
+
+    ball.SetVelocity(new Vector3(vx, vy, vz));
+
+    return ball;
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：時間と位置のずれで評価を決める</summary>
+                    <p class="code-description">ボールがストライクゾーンに入った時刻と、クリックした時刻がそろったところで判定します。時間のずれと位置のずれをそれぞれ0〜1に正規化し、その平均が小さいほど高い評価になります。どちらが先に起きても判定できるよう、両方のイベントから JudgeCheck を呼んでいます。</p>
+                    <pre tabindex="0" aria-label="PlayingCatchの時間と位置のずれで評価を決める コード"><code class="language-csharp">// Catch/CatchTimingJudge.cs より抜粋（クラス内の一部）
+private void JudgeCheck()
+{
+    if (!_isEnterBall) return;
+    if (!_isPress) return;
+
+    Judge();
+}
+
+private void Judge()
+{
+    _isBegin = false;
+    float timeLag = math.abs(_prefectTime - _currentTime);
+    float t = Mathf.Clamp01(timeLag / _timeJudgeGoodValue);   // 正規化
+
+    float distance = Vector3.Distance(_target, _currentPosition);
+    float d = Mathf.Clamp01(distance / _distanceJudgeGoodValue);   // 正規化
+
+    float score = (t + d) / 2f;
+    JudgeType type = JudgeType.None;
+    if (score &lt; _judgeRange.Prefect)
+    {
+        type = JudgeType.Prefect;
+    }
+    else if (score &lt; _judgeRange.Great)
+    {
+        type = JudgeType.Great;
+    }
+    else if (score &lt; _judgeRange.Good)
+    {
+        type = JudgeType.Good;
+    }
+    else
+    {
+        type = JudgeType.Miss;
+    }
+
+    _onEndJudge.OnNext(type);
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：縮むリングのシェーダーと表示</summary>
+                    <p class="code-description">シェーダーでは、UVの中心からの距離が「半径」と「半径 − 線の太さ」の間にあるところだけを塗り、輪を描きます。表示側では、ボールが届くまでの経過時間の割合で半径を1から0へ小さくし、目標のワールド座標を毎フレーム画面座標に変換してリングを重ねます。</p>
+                    <pre tabindex="0" aria-label="PlayingCatchの縮むリングのシェーダーと表示 コード"><code class="language-hlsl">// Shader/CatchRing.shader より抜粋（フラグメントシェーダー）
+half4 frag(Varyings IN) : SV_Target
+{
+    float2 center = 0.5;
+    float radius = _Radius / 2;
+    // 中心からの距離
+    float dist = length(IN.uv - center);
+
+    if (dist &gt; radius
+        || dist &lt; radius - _Offset)
+    {
+        return half4(0,0,0,0);
+    }
+    return _Color;
+}</code></pre>
+                    <pre tabindex="0" aria-label="PlayingCatchのリングの表示 コード"><code class="language-csharp">// Catch/CatchRingPresenter.cs より抜粋（クラス内の一部）
+void Update()
+{
+    if (!_isBegin) return;
+
+    Vector3 screenPosition =
+        _camera.WorldToScreenPoint(_target);
+
+    _ring.rectTransform.position = screenPosition;
+
+    _timer += Time.deltaTime;
+
+    var t = _timer / _duration;
+
+    _ring.SetRadius(1 - t);
+
+    if (t &gt; 0.99f)
+    {
+        _ring.SetRadius(0);
+        _isBegin = false;
+    }
+}</code></pre>
+                </details>
+                <details class="code-panel">
+                    <summary>実装コードを見る：R3でつなぐゲーム進行</summary>
+                    <p class="code-description">ピッチャーが投げたらキャッチ側に目標位置と到達時間を渡し、キャッチの判定が終わったら得点を足して球数を数えます。球数はReactivePropertyにして、変わるたびに表示を更新し、10球を超えたらリザルトを出します。最初の1球は Ready・Go のアニメーションが終わるのを await してから投げます。</p>
+                    <pre tabindex="0" aria-label="PlayingCatchのR3でつなぐゲーム進行 コード"><code class="language-csharp">// GameFlowController.cs より抜粋（クラス内の一部）
+async void Start()
+{
+    _pitch.ReleaseBall
+        .Subscribe(data =&gt;
+        {
+            _catch.SetTarget(data.Target);
+            _catch.Begin(data.Target, data.FlightTime);
+        }).AddTo(this);
+    _catch.Completed
+        .Subscribe(async type =&gt;
+        {
+            _point.AddPoint(type);
+            _count.Value++;
+            await UniTask.Delay(TimeSpan.FromSeconds(2f), cancellationToken: _cts.Token);
+            _completedOneFlow = true;
+        }).AddTo(this);
+
+    _count.Subscribe(c =&gt;
+    {
+        if (c &lt; 11)
+        {
+            _ui.SetCountTxt(c.ToString());
+            return;
+        }
+        _isGameOver = true;
+        _ui.Result(_point.ShowPoint().ToString());
+    }).AddTo(this);
+
+    await _ui.StartAnim(_cts.Token);
+    _count.Value++;
+    await UniTask.Delay(TimeSpan.FromSeconds(1f), cancellationToken: _cts.Token);
+    _completedOneFlow = true;
+}
+
+void Update()
+{
+    if (!_completedOneFlow) return;
+    if (_isGameOver) return;
+    _completedOneFlow = false;
+    Init();   // _pitch.ThrowBoll() で次の1球を投げる
+}</code></pre>
+                </details>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="wrap"><a href="playingcatch.html">PlayingCatch の作品ページに戻る</a><span>&copy; 2026 杉山健太</span></div>
+    </footer>
+</body>
+</html>
