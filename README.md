@@ -1,48 +1,30 @@
-# GamePortfolio
-ポートフォリオWEB版をPagesで公開するためのリポジトリ
+# 杉山健太 ゲームポートフォリオ
 
-## Archery
+ゲームプログラマー志望の杉山健太です。東京デザインテクノロジーセンター専門学校で、Unity・C# を中心にゲーム制作をしています。
 
-### 概要
-マウス操作で弓を操作し、的を狙って矢を放つ3Dアーチェリーゲーム。<br>
+**ポートフォリオサイト：https://jasin-cat.github.io/GamePortfolio/**
 
-プレイヤーは左クリックを長押しして弓を構え、マウス操作で照準を調整します。左クリックを離すことで矢を発射し、的への命中位置に応じて得点を獲得します。<br>
+各作品ページでは、プレイ映像・担当範囲・設計の選択理由・苦労した点と実装コードを紹介しています。
 
-矢の飛翔にはRigidbodyによる物理演算を利用し、発射方向や重力を考慮した軌道を実現しました。また、的への命中位置を判定することで、中心に近いほど高得点になるスコアシステムを実装しています。
+## 作品一覧
 
-### 操作
+| 作品 | ジャンル | 体制 | 技術 | リンク |
+| --- | --- | --- | --- | --- |
+| EmpireDash | 姿を変えて進むランアクション | チーム7名 | Unity / C# / UniRx / DOTween | [作品ページ](https://jasin-cat.github.io/GamePortfolio/works/empiredash.html) ・ [プレイ](https://www.njpw.co.jp/games/EmpireDash/) |
+| Catster（未完成） | 準備中 | チーム9名（チーム解散により制作中断） | Unity / C# / UniTask / MVP | [作品ページ](https://jasin-cat.github.io/GamePortfolio/works/catster.html) |
+| AccelerateMovement | 加速して進む2D横スクロールアクション | チーム11名 | Unity / C# / R3 / LitMotion / シェーダー | [作品ページ](https://jasin-cat.github.io/GamePortfolio/works/acceleratemovement.html) |
+| Archery | 3Dアーチェリー（的当て） | 個人制作 | Unity / C# / R3 / LitMotion / シェーダー | [作品ページ](https://jasin-cat.github.io/GamePortfolio/works/Archery.html) ・ [プレイ](https://jasin-cat.github.io/GamePortfolio/games/Archery/) |
+| Escape | 一人称3D迷路脱出（タイムアタック） | 個人制作 | Unity / C# / UniRx / UniTask / LitMotion | [作品ページ](https://jasin-cat.github.io/GamePortfolio/works/escape.html) ・ [プレイ](https://jasin-cat.github.io/GamePortfolio/games/Escape/) |
+| Minesweeper | 3Dアクション × マインスイーパー | 個人制作 | Unity / C# / R3 / UniTask / LitMotion | [作品ページ](https://jasin-cat.github.io/GamePortfolio/works/minesweeper.html) ・ [プレイ](https://jasin-cat.github.io/GamePortfolio/games/Minesweeper/) |
+| PlayingCatch | 3Dタイミングゲーム（キャッチボール） | ― | Unity / C# / R3 / UniTask / LitMotion / シェーダー | [作品ページ](https://jasin-cat.github.io/GamePortfolio/works/playingcatch.html) ・ [プレイ](https://jasin-cat.github.io/GamePortfolio/games/PlayingCatch/) |
 
-マウス移動：照準・視点操作<br>
-左クリック長押し：弓を構える<br>
-左クリックリリース：矢を発射
+## スキル
 
-### 制作時間
-  1週間
-### こだわり
-  プレイヤーが現在狙っている範囲を円形UIとして表示し、照準状態を表すようにしました。
-<br>
-https://jasin-cat.github.io/GamePortfolio/games/Archery/index.html
-<br>
-<br>
-<br>
-## マインスイーパー
-### 制作時間
-  1周間
-### こだわり
-  床が動くアニメーション
-### 操作方法
-  playerをマウスとWキーで操作してspeaceキーでジャンプしてマインスイーパーをクリアする
-<br>
-https://jasin-cat.github.io/GamePortfolio/games/Minesweeper/index.html
-<br>
-<br>
-<br>
-## キャッチボール
-### 制作時間
-  1周間
-### こだわり
-  レティクル
-### 操作方法
-  レティクルがなくなるときにレティクルをクリックすると判定する
-<br>
-https://jasin-cat.github.io/GamePortfolio/games/PlayingCatch/index.html
+- **開発ツール**：Unity / Visual Studio / Git
+- **言語**：C#（Unity・C# 約2年）、C/C++（約1年）
+- **ライブラリ・Unity機能**：UniTask / UniRx / R3 / DOTween / LitMotion / Addressables / Input System / ScriptableObject
+- **技術分野**：状態管理（State Pattern）/ MVP / Singleton / オブジェクトプール / シェーダー / シーン遷移 / 音声制御 / UI
+
+## 連絡先
+
+sugiyama.kenta028@gmail.com
